@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
+
+// --------------- Generating Matrices ---------------
 
 Matrix *zeros(int rows, int cols) {
 
@@ -123,6 +126,7 @@ Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]) {
     return mat;
 }
 
+// --------------- Retrieving Data ---------------
 
 Matrix *get_row(Matrix *mat, int row) {
     // check if the row index is valid
@@ -227,14 +231,119 @@ Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols) {
     return submatrix;
 }
 
+// --------------- Matrix Operations ---------------
 
-// matrix operations
-Matrix *transpose(Matrix *mat);
-Matrix *inverse(Matrix *mat);
-Matrix *multiply(Matrix *mat1, Matrix *mat2);
+double det(Matrix *mat) {
+    if (mat->rows != mat->cols) {
+        printf("Determinant can only be calculated for square matrices\n");
+        return NAN;
+    }
+
+    // perform LU decomposition
+    Matrix *L, *U;
+    LU_decompose(mat, &L, &U);
+
+    // determinant is product of upper diagonal
+    double det = 1.0;
+    for (int i = 0; i < mat->rows; i++) { det *= U->data[i][i]; }
+
+    release(L); release(U);
+    return det;
+}
+
+Matrix *transpose(Matrix *mat) {
+    // create a new matrix with dimensions swapped
+    Matrix *transposed = zeros(mat->cols, mat->rows);
+    if (transposed == NULL) {
+        printf("Failed to create transposed matrix\n");
+        return NULL;
+    }
+
+    // copy elements from the original matrix to the transposed matrix
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            transposed->data[j][i] = mat->data[i][j];
+        }
+    }
+
+    return transposed;
+}
+
+Matrix *matrix_inverse(Matrix *mat);
+
+Matrix *scale(Matrix *mat, double scalar) {
+    Matrix *result = zeros(mat->rows, mat->cols);
+
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            result->data[i][j] = scalar * mat->data[i][j];
+        }   
+    }
+
+    return result;
+}
+
+Matrix *multiply(Matrix *mat1, Matrix *mat2) {
+    // check dimensions
+    if (mat1->cols != mat2->rows) {
+        printf("Matrices are not compatible for multiplication\n");
+        return NULL;
+    }
+
+    // multiply matrices together
+    Matrix *result = zeros(mat1->rows, mat2->cols);
+    for (int i = 0; i < mat1->rows; i++) {
+        for (int j = 0; j < mat2->cols; j++) {
+            for (int k = 0; k < mat1->cols; k++) {
+                result->data[i][j] += mat1->data[i][k] * mat2->data[k][j];
+            }
+        }
+    }
+
+    return result;
+}
+
+Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
+    if (mat->rows != mat->cols) {
+        printf("LU decomposition requires a square matrix\n");
+    }
+
+    int n = mat->rows;
+
+    // initialise
+    *L = identity(n);
+    *U = zeros(n, n);
+
+    // perform LU decomposition
+    for (int j = 0; j < n; j++) {
+        (*U)->data[0][j] = mat->data[0][j];
+    }
+    for (int i = 1; i < n; i++) {
+        (*L)->data[i][0] = mat->data[i][0] / (*U)->data[0][0];
+    }
+    for (int i = 1; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            double sum = 0.0;
+            for (int k = 0; k < i; k++) {
+                sum += (*L)->data[i][k] * (*U)->data[k][j];
+            }
+            (*U)->data[i][j] = mat->data[i][j] - sum;
+        }
+        for (int j = i + 1; j < n; j++) {
+            double sum = 0.0;
+            for (int k = 0; k < i; k++) {
+                sum += (*L)->data[j][k] * (*U)->data[k][i];
+            }
+            (*L)->data[j][i] = (mat->data[j][i] - sum) / (*U)->data[i][i];
+        }
+    }
+}
+
 Matrix *solve_system(Matrix *mat1, Matrix *mat2);
 
-// matrix editing
+
+// --------------- Matrix Editing ---------------
+
 Matrix *map(Matrix *mat, double (*function)(double));
 void set_row(Matrix *mat, int row_index, double *row_values);
 void set_col(Matrix *mat, int col_index, double *col_values);
@@ -243,7 +352,8 @@ Matrix *remove_cols(Matrix *mat, int start_col, int num_cols);
 Matrix *insert_row(Matrix *mat, int row_index, double *row_values);
 Matrix *insert_col(Matrix *mat, int col_index, double *col_values);
 
-// displaying matirx
+// --------------- Miscellaneous Functions ---------------
+
 void display(Matrix *mat) {
     if (mat == NULL) {
         printf("Matrix is NULL\n");
@@ -259,8 +369,7 @@ void display(Matrix *mat) {
     }
 }
 
-// destorying matrix
-void destroy(Matrix *mat) {
+void release(Matrix *mat) {
     if (mat != NULL) {
         // Free memory for each row
         for (int i = 0; i < mat->rows; i++) {

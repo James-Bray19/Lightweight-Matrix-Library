@@ -2,44 +2,53 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "matrixmagic.h"
 
 int main() {
-    
-    // --------------- Generating Matrices ---------------
-    printf("GENERATING MATRICES\n");
-
-    printf("\nGenerate zeros:\n"); display(zeros(2, 4));
-    printf("\nGenerate ones:\n"); display(ones(3, 5));
-    printf("\nGenerate identity:\n"); display(identity(4));
-    printf("\nGenerate random:\n"); display(random(6, 2));
-
-    double data[4][4] = 
-    {
-        {1.23, 4.56, 2.34, 6.39},
-        {2.34, 3.45, 1.23, 7.24},
-        {5.58, 2.61, 4.47, 1.12},
-        {4.56, 1.23, 5.03, 1.09}
+    double data[3][3] = {
+        {1, 2, 4},
+        {3, 8, 14},
+        {2, 6, 13} 
     };
 
-    Matrix *mat = matrix_from_array(4, 4, data);
-    printf("\nGenerate from array:\n"); display(mat);
+    Matrix *mat1, *mat2;
+    
+    printf("\n--------------- Generating Matrices ---------------\n");
 
-    // --------------- Retrieving Data ---------------
-    printf("\n\nRETRIEVING DATA\n");
+    mat1 = zeros(2, 4); printf("\nGenerate zeros:\n"); display(mat1);
+    mat1 = ones(3, 5); printf("\nGenerate ones:\n"); display(mat1);
+    mat1 = identity(4); printf("\nGenerate identity:\n"); display(mat1);
+    mat1 = random(6, 2); printf("\nGenerate random:\n"); display(mat1);
+    mat1 = matrix_from_array(3, 3, data); printf("\nGenerate from array:\n"); display(mat1);
 
-    printf("\nGet row:\n"); display(get_row(mat, 1));
-    printf("\nGet col:\n"); display(get_col(mat, 1));
+    printf("\n--------------- Retrieving Data ---------------\n");
 
-    printf("\nCopying data:\n");
-    Matrix *mat2 = copy(mat); display(mat2);
+    mat2 = get_row(mat1, 1); printf("\nGet row:\n"); display(mat2);
+    mat2 = get_col(mat1, 1); printf("\nGet col:\n"); display(mat2);
+    mat2 = copy(mat1); printf("\nCopying data:\n"); display(mat2);
+    mat2 = get_lower(mat1); printf("\nGet lower:\n"); display(mat2);
+    mat2 = get_upper(mat1); printf("\nGet upper:\n"); display(mat2);
+    mat2 = get_submatrix(mat1, 1, 1, 2, 2); printf("\nGet submatrix\n"); display(mat2);
 
-    printf("\nGet lower:\n"); display(get_lower(mat));
-    printf("\nGet upper:\n"); display(get_upper(mat));
+    printf("\n--------------- Matrix Operations ---------------\n");
 
-    printf("\nGet submatrix\n"); display(get_submatrix(mat, 1, 1, 2, 2));
+    mat2 = transpose(mat1); printf("\nTranspose:\n"); display(mat2);
 
-    destroy(mat);
+    Matrix *L; Matrix *U;
+    LU_decompose(mat1, &L, &U);
+    printf("\nLower:\n"); display(L);
+    printf("\nUpper:\n"); display(U);
+    release(L); release(U);
+
+    printf("\nDeterminant of Mat1: %f\n", det(mat1));
+
+    printf("\n--------------- Matrix Editing ---------------\n");
+
+    mat2 = ones(3, 4); printf("\nMultiply:\n"); display(multiply(mat1, mat2));
+    printf("\nScale:\n"); display(scale(mat1, 3.0));
+
+    release(mat1); release(mat2);
 
     return 0;
 }
