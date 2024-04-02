@@ -123,13 +123,85 @@ Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]) {
     return mat;
 }
 
-// data retrieval
-double *get_row(Matrix *mat, int row);
-double *get_col(Matrix *mat, int col);
-double **as_array(Matrix *mat);
-Matrix *copy(Matrix *mat);
-Matrix *get_lower(Matrix *mat);
-Matrix *get_upper(Matrix *mat);
+
+Matrix *get_row(Matrix *mat, int row) {
+    // check if the row index is valid
+    if (row < 0 || row >= mat->rows) {
+        printf("Invalid row index\n");
+        return NULL;
+    }
+
+    // create a new matrix to represent the row
+    Matrix *row_matrix = zeros(1, mat->cols);
+
+    // copy the row data into the new matrix
+    for (int j = 0; j < mat->cols; j++) {
+        row_matrix->data[0][j] = mat->data[row][j];
+    }
+
+    return row_matrix;
+}
+
+Matrix *get_col(Matrix *mat, int col) {
+    // check if the column index is valid
+    if (col < 0 || col >= mat->cols) {
+        fprintf(stderr, "Invalid column index\n");
+        return NULL;
+    }
+
+    // create a new matrix to represent the column
+    Matrix *col_matrix = zeros(mat->rows, 1);
+
+    // copy the column data into the new matrix
+    for (int i = 0; i < mat->rows; i++) {
+        col_matrix->data[i][0] = mat->data[i][col];
+    }
+
+    return col_matrix;
+}
+
+Matrix *copy(Matrix *mat) {
+
+    // create a new matrix with the same dimensions as the original
+    Matrix *copied_matrix = zeros(mat->rows, mat->cols);
+
+    // copy the data from the original matrix to the new matrix
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            copied_matrix->data[i][j] = mat->data[i][j];
+        }
+    }
+
+    return copied_matrix;
+}
+
+Matrix *get_lower(Matrix *mat) {
+    // create a new matrix
+    Matrix *lower_triangular = zeros(mat->rows, mat->cols);
+
+    // copy the lower triangular part
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            if (i >= j) { lower_triangular->data[i][j] = mat->data[i][j]; }
+        }
+    }
+
+    return lower_triangular;
+}
+
+Matrix *get_upper(Matrix *mat) {
+    // create a new matrix
+    Matrix *upper_triangular = zeros(mat->rows, mat->cols);
+
+    // copy the upper triangular part
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            if (i <= j) { upper_triangular->data[i][j] = mat->data[i][j]; }
+        }
+    }
+
+    return upper_triangular;
+}
 
 // matrix operations
 Matrix *transpose(Matrix *mat);

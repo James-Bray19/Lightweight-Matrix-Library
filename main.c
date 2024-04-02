@@ -5,11 +5,14 @@
 #include "matrixmagic.h"
 
 int main() {
-    Matrix *mat = zeros(2, 4); display(mat);
+    
+    // --------------- Generating Matrices ---------------
+    printf("GENERATING MATRICES\n");
 
-    mat = ones(3, 5); display(mat);
-    mat = identity(2); display(mat);
-    mat = random(6, 2); display(mat);
+    printf("\nGenerate zeros:\n"); display(zeros(2, 4));
+    printf("\nGenerate ones:\n"); display(ones(3, 5));
+    printf("\nGenerate identity:\n"); display(identity(4));
+    printf("\nGenerate random:\n"); display(random(6, 2));
 
     double data[3][3] = 
     {
@@ -18,7 +21,19 @@ int main() {
         {4.56, 1.23, 5.03}
     };
 
-    mat = matrix_from_array(3, 3, data); display(mat);
+    Matrix *mat = matrix_from_array(3, 3, data); 
+    printf("\nGenerate from array:\n"); display(mat);
+
+    printf("\n\nRETRIEVING DATA\n");
+
+    printf("\nGet row:\n"); display(get_row(mat, 1));
+    printf("\nGet col:\n"); display(get_col(mat, 1));
+
+    printf("\nCopying data:\n");
+    Matrix *mat2 = copy(mat); display(mat2);
+
+    printf("\nGet lower:\n"); display(get_lower(mat));
+    printf("\nGet upper:\n"); display(get_upper(mat));
 
     destroy(mat);
     return 0;
