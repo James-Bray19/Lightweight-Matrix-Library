@@ -14,16 +14,18 @@ int main() {
     printf("\nGenerate identity:\n"); display(identity(4));
     printf("\nGenerate random:\n"); display(random(6, 2));
 
-    double data[3][3] = 
+    double data[4][4] = 
     {
-        {1.23, 4.56, 2.34},
-        {2.34, 3.45, 1.23},
-        {4.56, 1.23, 5.03}
+        {1.23, 4.56, 2.34, 6.39},
+        {2.34, 3.45, 1.23, 7.24},
+        {5.58, 2.61, 4.47, 1.12},
+        {4.56, 1.23, 5.03, 1.09}
     };
 
-    Matrix *mat = matrix_from_array(3, 3, data); 
+    Matrix *mat = matrix_from_array(4, 4, data);
     printf("\nGenerate from array:\n"); display(mat);
 
+    // --------------- Retrieving Data ---------------
     printf("\n\nRETRIEVING DATA\n");
 
     printf("\nGet row:\n"); display(get_row(mat, 1));
@@ -35,6 +37,9 @@ int main() {
     printf("\nGet lower:\n"); display(get_lower(mat));
     printf("\nGet upper:\n"); display(get_upper(mat));
 
+    printf("\nGet submatrix\n"); display(get_submatrix(mat, 1, 1, 2, 2));
+
     destroy(mat);
+
     return 0;
 }

@@ -203,6 +203,31 @@ Matrix *get_upper(Matrix *mat) {
     return upper_triangular;
 }
 
+Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols) {
+    // check if the indices are within bounds
+    if (row < 0 || col < 0 || row + rows > mat->rows || col + cols > mat->cols) {
+        fprintf(stderr, "Submatrix indices out of bounds\n");
+        return NULL;
+    }
+
+    // create a new matrix for the submatrix
+    Matrix *submatrix = zeros(rows, cols);
+    if (submatrix == NULL) {
+        fprintf(stderr, "Failed to create submatrix\n");
+        return NULL;
+    }
+
+    // copy the elements from the original matrix to the submatrix
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            submatrix->data[i][j] = mat->data[row + i][col + j];
+        }
+    }
+
+    return submatrix;
+}
+
+
 // matrix operations
 Matrix *transpose(Matrix *mat);
 Matrix *inverse(Matrix *mat);
