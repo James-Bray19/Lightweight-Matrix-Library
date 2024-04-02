@@ -1,12 +1,17 @@
+# compiler settings
 CC = gcc
-CFLAGS = -Wall -Wextra -Iinclude
+CFLAGS = -Iinclude
 
-.PHONY: all clean
-
+# targets and dependencies
 all: example
 
-example: examples/example.c src/matrixmagic.c
-	$(CC) $(CFLAGS) $^ -o $@
+example: main.c lib/libmatrixmagic.a
+	$(CC) $(CFLAGS) $< -o $@ -Llib -lmatrixmagic
 
+lib/libmatrixmagic.a: src/matrixmagic.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# clean up generated files
 clean:
-	rm -f example
+	rm -f example lib/libmatrixmagic.a
+
