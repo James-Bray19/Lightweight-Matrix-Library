@@ -1,4 +1,14 @@
-// example.c
+/*
+ * Example Usage of Lightweight Matrix Library (LML)
+ * File: main.c
+ * Author: James Bray
+ *
+ * This example demonstrates the usage of the Lightweight Matrix Library (LML)
+ * by performing various operations on matrices such as generating matrices,
+ * retrieving data, performing matrix operations, editing matrices, and displaying
+ * results. The example showcases the functionality of the library and serves as
+ * a reference for developers interested in using LML in their projects.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +22,7 @@ int main() {
         {2, 6, 13} 
     };
 
-    Matrix *mat1, *mat2;
+    Matrix *mat1, *mat2, *mat3;
     
     printf("\n--------------- Generating Matrices ---------------\n");
 
@@ -41,14 +51,35 @@ int main() {
     printf("\nUpper:\n"); display(U);
     release(L); release(U);
 
-    printf("\nDeterminant of Mat1: %f\n", det(mat1));
+    printf("\nDeterminant: %f\n", det(mat1));
 
     printf("\n--------------- Matrix Editing ---------------\n");
 
-    mat2 = ones(3, 4); printf("\nMultiply:\n"); display(multiply(mat1, mat2));
-    printf("\nScale:\n"); display(scale(mat1, 3.0));
+    mat1 = identity(3); mat2 = ones(3, 3);
+    scale(mat1, 2); printf("\nScale:\n"); display(mat1);
+    shift(mat1, 0.5); printf("\nShift:\n"); display(mat1);
 
-    release(mat1); release(mat2);
+    mat3 = multiply(mat1, mat2); printf("\nMultiply:\n"); display(mat3);
+    mat3 = add(mat1, mat2); printf("\nAdd:\n"); display(mat3);
+
+    mat1 = zeros(4, 4); 
+    mat2 = ones(1, 4); set_row(mat1, 1, mat2); 
+    printf("\nSet row:\n"); display(mat1);
+    mat2 = ones(4, 1); set_col(mat1, 1, mat2); 
+    printf("\nSet col:\n"); display(mat1);
+
+    remove_row(mat1, 1); printf("\nRemove row:\n"); display(mat1);
+    remove_col(mat1, 1); printf("\nRemove column:\n"); display(mat1);
+
+    // mat1 = random(5, 5); display(mat1);
+    // mat2 = zeros(5, 1); insert_col(&mat1, 1, mat2);
+    // printf("\nInsert col:\n"); display(mat1);
+
+    // mat1 = random(5, 5); display(mat1);
+    // mat2 = zeros(1, 5); insert_row(&mat1, 1, mat2);
+    // printf("\nInsert row:\n"); display(mat1);
+
+    release(mat1); release(mat2); release(mat3);
 
     return 0;
 }

@@ -1,10 +1,20 @@
-// matrixmagic.c
+/*
+ * Lightweight Matrix Library (LML) - Source Code
+ * File: lml.c
+ * Author: James Bray
+ *
+ * This source file contains the implementation of the functions provided
+ * by the Lightweight Matrix Library (LML). The library offers functionality
+ * for generating matrices, retrieving data, performing matrix operations, editing
+ * matrices, and various miscellaneous functions. The implementation aims for
+ * efficiency and portability, making it suitable for use in embedded systems
+ * and other resource-constrained environments.
+ */
 
 #include "lml.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <math.h>
 
 // --------------- Generating Matrices ---------------
 
@@ -236,7 +246,7 @@ Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols) {
 double det(Matrix *mat) {
     if (mat->rows != mat->cols) {
         printf("Determinant can only be calculated for square matrices\n");
-        return NAN;
+        return 0.0;
     }
 
     // perform LU decomposition
@@ -269,19 +279,7 @@ Matrix *transpose(Matrix *mat) {
     return transposed;
 }
 
-Matrix *matrix_inverse(Matrix *mat);
-
-Matrix *scale(Matrix *mat, double scalar) {
-    Matrix *result = zeros(mat->rows, mat->cols);
-
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            result->data[i][j] = scalar * mat->data[i][j];
-        }   
-    }
-
-    return result;
-}
+Matrix *inverse(Matrix *mat);
 
 Matrix *multiply(Matrix *mat1, Matrix *mat2) {
     // check dimensions
@@ -297,6 +295,24 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2) {
             for (int k = 0; k < mat1->cols; k++) {
                 result->data[i][j] += mat1->data[i][k] * mat2->data[k][j];
             }
+        }
+    }
+
+    return result;
+}
+
+Matrix *add(Matrix *mat1, Matrix *mat2) {
+    // check if matrices have compatible dimensions
+    if (mat1->rows != mat2->rows || mat1->cols != mat2->cols) {
+        printf("Matrices aren't the same size.");
+        return NULL;
+    }
+
+    // add matrices
+    Matrix *result = zeros(mat1->rows, mat1->cols);
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            result->data[i][j] = mat1->data[i][j] + mat2->data[i][j];
         }
     }
 
@@ -339,18 +355,173 @@ Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
     }
 }
 
-Matrix *solve_system(Matrix *mat1, Matrix *mat2);
-
+Matrix *solve(Matrix *mat1, Matrix *mat2);
 
 // --------------- Matrix Editing ---------------
 
-Matrix *map(Matrix *mat, double (*function)(double));
-void set_row(Matrix *mat, int row_index, double *row_values);
-void set_col(Matrix *mat, int col_index, double *col_values);
-Matrix *remove_rows(Matrix *mat, int start_row, int num_rows);
-Matrix *remove_cols(Matrix *mat, int start_col, int num_cols);
-Matrix *insert_row(Matrix *mat, int row_index, double *row_values);
-Matrix *insert_col(Matrix *mat, int col_index, double *col_values);
+void scale(Matrix *mat, double scalar) {
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            mat->data[i][j] *= scalar;
+        }   
+    }
+}
+
+void shift(Matrix *mat, double scalar) {
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            mat->data[i][j] += scalar;
+        }   
+    }
+}
+
+void set_row(Matrix *mat, int row_index, Matrix *row_values) {
+    // check if row_index is valid
+    if (row_index < 0 || row_index >= mat->rows) {
+        printf("Invalid row index\n");
+        return;
+    }
+
+    // check if dimensions are valid
+    if (row_values->cols != mat->cols) {
+        printf("Dimension mismatch\n");
+        return;
+    }
+
+    // copy the values from row_values to the matrix
+    for (int j = 0; j < mat->cols; j++) {
+        mat->data[row_index][j] = row_values->data[0][j];
+    }
+}
+
+void set_col(Matrix *mat, int col_index, Matrix *col_values) {
+    // check if col_index is valid
+    if (col_index < 0 || col_index >= mat->cols) {
+        printf("Invalid column index\n");
+        return;
+    }
+
+    // check if dimensions are valid
+    if (col_values->rows != mat->rows) {
+        printf("Dimension mismatch\n");
+        return;
+    }
+
+    // copy the values from col_values to the matrix
+    for (int i = 0; i < mat->rows; i++) {
+        mat->data[i][col_index] = col_values->data[i][0];
+    }
+}
+
+void remove_row(Matrix *mat, int row) {
+    // check if row index is valid
+    if (row < 0 || row >= mat->rows) {
+        printf("Invalid row index\n");
+        return;
+    }
+
+    // free memory for the row to be removed
+    free(mat->data[row]);
+
+    // shift rows above the removed row down
+    for (int i = row + 1; i < mat->rows; i++) {
+        mat->data[i - 1] = mat->data[i];
+    }
+    mat->rows--;
+
+    // reallocate memory for the data array
+    mat->data = realloc(mat->data, mat->rows * sizeof(double *));
+}
+
+void remove_col(Matrix *mat, int col) {
+    // check if column index is valid
+    if (col < 0 || col >= mat->cols) {
+        printf("Invalid column index\n");
+        return;
+    }
+    mat->cols--;
+
+    // shift columns to the right of the removed column to the left
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = col; j < mat->cols; j++) {
+            mat->data[i][j] = mat->data[i][j + 1];
+        }
+        // reallocate memory for the row to remove the column
+        mat->data[i] = realloc(mat->data[i], mat->cols * sizeof(double));
+    }
+}
+
+void insert_row(Matrix **mat, int row, Matrix *row_values) {
+    // check pointer
+    if (*mat == NULL) { printf("Invalid matrix pointer\n"); return; }
+
+    // check if row index is valid
+    if (row < 0 || row > (*mat)->rows) { printf("Invalid row index\n"); return; }
+
+    // check if dimensions match
+    if (row_values->cols != (*mat)->cols) { printf("Dimension mismatch\n"); return; }
+
+    Matrix *new_mat = zeros((*mat)->rows + 1, (*mat)->cols);
+    
+    // copy existing rows before insertion point
+    for (int i = 0; i < row; i++) {
+        new_mat->data[i] = (*mat)->data[i];
+    }
+    
+    // copy the new row
+    for (int j = 0; j < (*mat)->cols; j++) {
+        new_mat->data[row][j] = row_values->data[0][j];
+    }
+
+    // copy existing rows after insertion point
+    for (int i = row; i < (*mat)->rows; i++) {
+        new_mat->data[i + 1] = (*mat)->data[i];
+    }
+
+    release(*mat);
+    *mat = new_mat;
+    release(new_mat);
+}
+
+void insert_col(Matrix **mat, int col, Matrix *col_values) {
+    // check if the pointer to the matrix is valid
+    if (*mat == NULL) { printf("Invalid matrix pointer\n"); return; }
+
+    // check if column index is valid
+    if (col < 0 || col > (*mat)->cols) { printf("Invalid column index\n"); return; }
+
+    // check if dimensions match
+    if (col_values->rows != (*mat)->rows) { printf("Dimension mismatch\n"); return; }
+
+    // create a new matrix with an additional column
+    Matrix *new_mat = zeros((*mat)->rows, (*mat)->cols + 1);
+
+    // copy existing columns before insertion point
+    for (int j = 0; j < col; j++) {
+        for (int i = 0; i < (*mat)->rows; i++) {
+            new_mat->data[i][j] = (*mat)->data[i][j];
+        }
+    }
+    
+    // copy the new column
+    for (int i = 0; i < (*mat)->rows; i++) {
+        new_mat->data[i][col] = col_values->data[i][0];
+    }
+
+    // copy existing columns after insertion point
+    for (int j = col; j < (*mat)->cols; j++) {
+        for (int i = 0; i < (*mat)->rows; i++) {
+            new_mat->data[i][j + 1] = (*mat)->data[i][j];
+        }
+    }
+
+    release(*mat);
+    *mat = new_mat;
+}
+
+void append_rows(Matrix **mat1, Matrix *mat2);
+void append_cols(Matrix **mat1, Matrix *mat2);
+void map(Matrix *mat, double (*function)(double));
 
 // --------------- Miscellaneous Functions ---------------
 
