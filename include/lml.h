@@ -23,6 +23,8 @@ typedef struct {
     double **data;
 } Matrix;
 
+
+
 // --------------- Generating Matrices ---------------
 
 // returns a matrix filled with zeros of size rows x cols
@@ -44,6 +46,8 @@ Matrix *random(int rows, int cols);
 // creates a matrix from a 2D array
 // params: rows - number of rows, cols - number of columns, array - input array
 Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]);
+
+
 
 // --------------- Retrieving Data ---------------
 
@@ -71,27 +75,25 @@ Matrix *get_upper(Matrix *mat);
 // params: mat - input matrix, row - starting row index, col - starting column index, rows - number of rows, cols - number of columns
 Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols);
 
+
+
 // --------------- Matrix Operations ---------------
 
 // returns the determinant of the input matrix
 // params: mat - input matrix
 double det(Matrix *mat);
 
-// returns the transpose of the input matrix
-// params: mat - input matrix
-Matrix *transpose(Matrix *mat);
-
-// returns the inverse of the input matrix
-// params: mat - input matrix
-Matrix *inverse(Matrix *mat);
+// returns the result of element-wise addition of two matrices
+// params: mat1 - first matrix, mat2 - second matrix
+Matrix *add(Matrix *mat1, Matrix *mat2);
 
 // returns the result of matrix multiplication of two matrices
 // params: mat1 - first matrix, mat2 - second matrix
 Matrix *multiply(Matrix *mat1, Matrix *mat2);
 
-// returns the result of element-wise addition of two matrices
-// params: mat1 - first matrix, mat2 - second matrix
-Matrix *add(Matrix *mat1, Matrix *mat2);
+// returns the transpose of the input matrix
+// params: mat - input matrix
+Matrix *transpose(Matrix *mat);
 
 // decomposes the input matrix into Lower and Upper triangular matrices
 // params: mat - input matrix, L - output Lower triangular matrix, U - output Upper triangular matrix
@@ -100,6 +102,12 @@ Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U);
 // solves a system of linear equations represented by matrices
 // params: mat1 - coefficient matrix, mat2 - constant matrix
 Matrix *solve(Matrix *mat1, Matrix *mat2);
+
+// returns the inverse of the input matrix
+// params: mat - input matrix
+Matrix *inverse(Matrix *mat);
+
+
 
 // --------------- Matrix Editing ---------------
 
@@ -146,6 +154,8 @@ void append_cols(Matrix **mat1, Matrix *mat2);
 // applies a function element-wise to the matrix
 // params: mat - input matrix, function - function pointer to apply
 void map(Matrix *mat, double (*function)(double));
+
+
 
 // --------------- Miscellaneous Functions ---------------
 

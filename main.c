@@ -8,57 +8,110 @@
  * retrieving data, performing matrix operations, editing matrices, and displaying
  * results. The example showcases the functionality of the library and serves as
  * a reference for developers interested in using LML in their projects.
+ * 
+ * For more detailed documentation, see the README in the following repo:
+ *      https://github.com/James-Bray19/Lightweight-Matrix-Library
+ * 
+ * Any contributions or issues should also be posted there.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include "lml.h"
 
 int main() {
-    double data[3][3] = {
-        {1, 2, 4},
-        {3, 8, 14},
-        {2, 6, 13} 
-    };
 
     Matrix *mat1, *mat2, *mat3;
-    
+
+
+
     printf("\n--------------- Generating Matrices ---------------\n");
 
-    mat1 = zeros(2, 4); printf("\nGenerate zeros:\n"); display(mat1);
-    mat1 = ones(3, 5); printf("\nGenerate ones:\n"); display(mat1);
-    mat1 = identity(4); printf("\nGenerate identity:\n"); display(mat1);
-    mat1 = random(6, 2); printf("\nGenerate random:\n"); display(mat1);
-    mat1 = matrix_from_array(3, 3, data); printf("\nGenerate from array:\n"); display(mat1);
+    double data[3][3] = { {  1,  2,  4 },
+                          {  3,  8, 14 },
+                          {  2,  6, 13 } };
+
+    printf("\nGenerate zeros:\n");
+    mat1 = zeros(2, 4); display(mat1);
+
+    printf("\nGenerate ones:\n");
+    mat1 = ones(3, 5); display(mat1);
+
+    printf("\nGenerate identity:\n");
+    mat1 = identity(4); display(mat1);
+
+    printf("\nGenerate random:\n");
+    mat1 = random(6, 2); display(mat1);
+
+    printf("\nGenerate from array:\n"); 
+    mat1 = matrix_from_array(3, 3, data); display(mat1);
+
+
 
     printf("\n--------------- Retrieving Data ---------------\n");
 
-    mat2 = get_row(mat1, 1); printf("\nGet row:\n"); display(mat2);
-    mat2 = get_col(mat1, 1); printf("\nGet col:\n"); display(mat2);
-    mat2 = copy(mat1); printf("\nCopying data:\n"); display(mat2);
-    mat2 = get_lower(mat1); printf("\nGet lower:\n"); display(mat2);
-    mat2 = get_upper(mat1); printf("\nGet upper:\n"); display(mat2);
-    mat2 = get_submatrix(mat1, 1, 1, 2, 2); printf("\nGet submatrix\n"); display(mat2);
+    printf("\nThe following section will use this matrix:\n");
+    mat1 = random(4, 4); display(mat1);
+
+    printf("\nGet row:\n");
+    mat2 = get_row(mat1, 1); display(mat2);
+
+    printf("\nGet col:\n");
+    mat2 = get_col(mat1, 1); display(mat2);
+
+    printf("\nCopy of matrix:\n");
+    mat2 = copy(mat1); display(mat2);
+
+    printf("\nGet lower triangle:\n");
+    mat2 = get_lower(mat1); display(mat2);
+
+    printf("\nGet upper triangle:\n");
+    mat2 = get_upper(mat1); display(mat2);
+
+    printf("\nGet submatrix:\n");
+    mat2 = get_submatrix(mat1, 1, 1, 2, 2); display(mat2);
+
+
 
     printf("\n--------------- Matrix Operations ---------------\n");
 
-    mat2 = transpose(mat1); printf("\nTranspose:\n"); display(mat2);
+    Matrix *coeffs, *consts, *L, *U, *trans, *inv, *sol;
 
-    Matrix *L; Matrix *U;
-    LU_decompose(mat1, &L, &U);
-    printf("\nLower:\n"); display(L);
+    printf("\nCoeffiecient Matrix:\n");
+    coeffs = random(6, 6); display(coeffs);
+
+    printf("\nConstants:\n");
+    consts = random(6, 1); display(consts);
+
+    printf("\nDeterminant of coefficient matrix:\n");
+    printf("%8.2f\n", det(coeffs));
+
+    printf("\nTranspose coefficients:\n");
+    trans = transpose(coeffs); display(trans);
+
+    printf("\nLU Decomposition:\n"); 
+    LU_decompose(coeffs, &L, &U);
+    printf("\nLower:\n"); display(L); 
     printf("\nUpper:\n"); display(U);
-    release(L); release(U);
 
-    printf("\nDeterminant: %f\n", det(mat1));
+    printf("\nGaussian Solution:\n");
+    sol = solve(coeffs, consts); display(sol);
+
+    printf("\nInverse:\n");
+    inv = inverse(coeffs); display(inv);
+
+    printf("\nInverse Solution:\n");
+    sol = multiply(inv, consts); display(sol);
+
+
 
     printf("\n--------------- Matrix Editing ---------------\n");
 
-    mat1 = identity(3); mat2 = ones(3, 3);
+    mat1 = identity(3); 
     scale(mat1, 2); printf("\nScale:\n"); display(mat1);
     shift(mat1, 0.5); printf("\nShift:\n"); display(mat1);
-
+    
+    mat2 = ones(3, 3);
     mat3 = multiply(mat1, mat2); printf("\nMultiply:\n"); display(mat3);
     mat3 = add(mat1, mat2); printf("\nAdd:\n"); display(mat3);
 
@@ -71,15 +124,22 @@ int main() {
     remove_row(mat1, 1); printf("\nRemove row:\n"); display(mat1);
     remove_col(mat1, 1); printf("\nRemove column:\n"); display(mat1);
 
-    // mat1 = random(5, 5); display(mat1);
-    // mat2 = zeros(5, 1); insert_col(&mat1, 1, mat2);
-    // printf("\nInsert col:\n"); display(mat1);
+    mat1 = random(5, 5); display(mat1);
+    mat2 = ones(5, 1); scale(mat2, 888); insert_col(&mat1, 1, mat2);
+    printf("\nInsert col:\n"); display(mat1);
 
-    // mat1 = random(5, 5); display(mat1);
-    // mat2 = zeros(1, 5); insert_row(&mat1, 1, mat2);
-    // printf("\nInsert row:\n"); display(mat1);
+    mat1 = random(5, 5); display(mat1);
+    mat2 = ones(1, 5); scale(mat2, 888); insert_row(&mat1, 1, mat2);
+    printf("\nInsert row:\n"); display(mat1);
 
+
+
+    printf("\n--------------- Program Finished ---------------\n");
+
+    // release memory after processing
     release(mat1); release(mat2); release(mat3);
+    release(coeffs); release(consts); release(L); release(U);
+    release(trans); release(inv); release(sol);
 
     return 0;
 }

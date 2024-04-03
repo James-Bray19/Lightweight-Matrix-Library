@@ -9,6 +9,11 @@
  * matrices, and various miscellaneous functions. The implementation aims for
  * efficiency and portability, making it suitable for use in embedded systems
  * and other resource-constrained environments.
+ * 
+ * For more detailed documentation, see the README in the following repo:
+ *      https://github.com/James-Bray19/Lightweight-Matrix-Library
+ * 
+ * Any contributions or issues should also be posted there.
  */
 
 #include "lml.h"
@@ -138,6 +143,21 @@ Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]) {
 
 // --------------- Retrieving Data ---------------
 
+Matrix *copy(Matrix *mat) {
+
+    // create a new matrix with the same dimensions as the original
+    Matrix *copied_matrix = zeros(mat->rows, mat->cols);
+
+    // copy the data from the original matrix to the new matrix
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            copied_matrix->data[i][j] = mat->data[i][j];
+        }
+    }
+
+    return copied_matrix;
+}
+
 Matrix *get_row(Matrix *mat, int row) {
     // check if the row index is valid
     if (row < 0 || row >= mat->rows) {
@@ -172,21 +192,6 @@ Matrix *get_col(Matrix *mat, int col) {
     }
 
     return col_matrix;
-}
-
-Matrix *copy(Matrix *mat) {
-
-    // create a new matrix with the same dimensions as the original
-    Matrix *copied_matrix = zeros(mat->rows, mat->cols);
-
-    // copy the data from the original matrix to the new matrix
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            copied_matrix->data[i][j] = mat->data[i][j];
-        }
-    }
-
-    return copied_matrix;
 }
 
 Matrix *get_lower(Matrix *mat) {
@@ -261,25 +266,23 @@ double det(Matrix *mat) {
     return det;
 }
 
-Matrix *transpose(Matrix *mat) {
-    // create a new matrix with dimensions swapped
-    Matrix *transposed = zeros(mat->cols, mat->rows);
-    if (transposed == NULL) {
-        printf("Failed to create transposed matrix\n");
+Matrix *add(Matrix *mat1, Matrix *mat2) {
+    // check if matrices have compatible dimensions
+    if (mat1->rows != mat2->rows || mat1->cols != mat2->cols) {
+        printf("Matrices aren't the same size.");
         return NULL;
     }
 
-    // copy elements from the original matrix to the transposed matrix
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            transposed->data[j][i] = mat->data[i][j];
+    // add matrices
+    Matrix *result = zeros(mat1->rows, mat1->cols);
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            result->data[i][j] = mat1->data[i][j] + mat2->data[i][j];
         }
     }
 
-    return transposed;
+    return result;
 }
-
-Matrix *inverse(Matrix *mat);
 
 Matrix *multiply(Matrix *mat1, Matrix *mat2) {
     // check dimensions
@@ -301,22 +304,22 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2) {
     return result;
 }
 
-Matrix *add(Matrix *mat1, Matrix *mat2) {
-    // check if matrices have compatible dimensions
-    if (mat1->rows != mat2->rows || mat1->cols != mat2->cols) {
-        printf("Matrices aren't the same size.");
+Matrix *transpose(Matrix *mat) {
+    // create a new matrix with dimensions swapped
+    Matrix *transposed = zeros(mat->cols, mat->rows);
+    if (transposed == NULL) {
+        printf("Failed to create transposed matrix\n");
         return NULL;
     }
 
-    // add matrices
-    Matrix *result = zeros(mat1->rows, mat1->cols);
-    for (int i = 0; i < result->rows; i++) {
-        for (int j = 0; j < result->cols; j++) {
-            result->data[i][j] = mat1->data[i][j] + mat2->data[i][j];
+    // copy elements from the original matrix to the transposed matrix
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            transposed->data[j][i] = mat->data[i][j];
         }
     }
 
-    return result;
+    return transposed;
 }
 
 Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
@@ -355,7 +358,90 @@ Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
     }
 }
 
-Matrix *solve(Matrix *mat1, Matrix *mat2);
+Matrix *solve(Matrix *mat1, Matrix *mat2) {
+    // check if the matrices are valid
+    if (mat1 == NULL || mat2 == NULL) { printf("Invalid matrices\n"); return NULL; }
+
+    // check if the coefficient matrix is square
+    if (mat1->rows != mat1->cols) { printf("Coefficient matrix must be square\n"); return NULL; }
+
+    // check if the dimensions match
+    if (mat1->rows != mat2->rows) { printf("Dimension mismatch\n"); return NULL; }
+
+    // perform LU decomposition
+    Matrix *L, *U;
+    LU_decompose(mat1, &L, &U);
+
+    // solve Ly = mat2 using forward substitution
+    Matrix *y = zeros(mat1->rows, 1);
+    for (int i = 0; i < mat1->rows; i++) {
+        double sum = 0.0;
+        for (int j = 0; j < i; j++) {
+            sum += L->data[i][j] * y->data[j][0];
+        }
+        y->data[i][0] = (mat2->data[i][0] - sum) / L->data[i][i];
+    }
+
+    // solve Ux = y using back substitution
+    Matrix *x = zeros(mat1->rows, 1);
+    for (int i = mat1->rows - 1; i >= 0; i--) {
+        double sum = 0.0;
+        for (int j = i + 1; j < mat1->rows; j++) {
+            sum += U->data[i][j] * x->data[j][0];
+        }
+        x->data[i][0] = (y->data[i][0] - sum) / U->data[i][i];
+    }
+
+    release(L); release(U); release(y);
+
+    return x;
+}
+
+Matrix *inverse(Matrix *mat) {
+    // Check if the matrix is square
+    if (mat->rows != mat->cols) {
+        printf("Matrix must be square\n");
+        return NULL;
+    }
+
+    // Create an identity matrix of the same size as mat
+    Matrix *identity_mat = identity(mat->rows);
+
+    // Perform LU decomposition on the input matrix
+    Matrix *L = NULL;
+    Matrix *U = NULL;
+    LU_decompose(mat, &L, &U);
+
+    // Initialize the inverse matrix
+    Matrix *inverse_mat = zeros(mat->rows, mat->cols);
+
+    // Solve Ax = I for each column of the identity matrix
+    for (int i = 0; i < mat->cols; i++) {
+        // Extract the i-th column of the identity matrix
+        Matrix *column_i = get_col(identity_mat, i);
+
+        // Solve the linear system using LU decomposition and back substitution
+        Matrix *solution = solve(mat, column_i);
+
+        // Set the i-th column of the inverse matrix to the solution
+        set_col(inverse_mat, i, solution);
+
+        // Free memory allocated for the solution matrix
+        release(solution);
+
+        // Free memory allocated for the column matrix
+        release(column_i);
+    }
+
+    // Free memory allocated for L and U matrices
+    release(L);
+    release(U);
+
+    // Free memory allocated for the identity matrix
+    release(identity_mat);
+
+    return inverse_mat;
+}
 
 // --------------- Matrix Editing ---------------
 
