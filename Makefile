@@ -3,15 +3,15 @@ CC = gcc
 CFLAGS = -Iinclude
 
 # targets and dependencies
-all: example
+all: main
 
-example: main.c lib/libmatrixmagic.a
-	$(CC) $(CFLAGS) $< -o $@ -Llib -lmatrixmagic
+main: main.c lib/liblml.a
+	$(CC) $(CFLAGS) $< -o $@ -Llib -llml
 
-lib/libmatrixmagic.a: src/matrixmagic.c
+lib/liblml.a: src/lml.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # clean up generated files
 clean:
-	rm -f example lib/libmatrixmagic.a
+	rm -f main lib/liblml.a
 

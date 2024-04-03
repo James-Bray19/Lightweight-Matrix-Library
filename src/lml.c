@@ -1,6 +1,6 @@
 // matrixmagic.c
 
-#include "matrixmagic.h"
+#include "lml.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>

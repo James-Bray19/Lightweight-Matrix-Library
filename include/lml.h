@@ -1,7 +1,7 @@
 // matrixmagic.h
 
-#ifndef MATRIXMAGIC_H
-#define MATRIXMAGIC_H
+#ifndef LIGHTWEIGHTMATRIXLIBRARY_H
+#define LIGHTWEIGHTMATRIXLIBRARY_H
 
 typedef struct {
     int rows;
@@ -45,4 +45,4 @@ Matrix *insert_col(Matrix *mat, int col_index, double *col_values);
 void display(Matrix *mat);
 void release(Matrix *mat);
 
-#endif /* MATRIXMAGIC_H */
+#endif /* LIGHTWEIGHTMATRIXLIBRARY_H */
