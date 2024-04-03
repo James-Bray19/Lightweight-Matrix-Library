@@ -23,8 +23,6 @@ int main() {
 
     Matrix *mat1, *mat2, *mat3;
 
-
-
     printf("\n--------------- Generating Matrices ---------------\n");
 
     double data[3][3] = { {  1,  2,  4 },
