@@ -1,19 +1,12 @@
 /*
  * Lightweight Matrix Library (LML) - Source Code
- * File: lml.c
- * Author: James Bray
  *
- * This source file contains the implementation of the functions provided
- * by the Lightweight Matrix Library (LML). The library offers functionality
- * for generating matrices, retrieving data, performing matrix operations, editing
- * matrices, and various miscellaneous functions. The implementation aims for
- * efficiency and portability, making it suitable for use in embedded systems
- * and other resource-constrained environments.
+ * File:     lml.c
+ * Author:   James Bray
+ * Repo:     https://github.com/James-Bray19/Lightweight-Matrix-Library
  * 
- * For more detailed documentation, see the README in the following repo:
- *      https://github.com/James-Bray19/Lightweight-Matrix-Library
- * 
- * Any contributions or issues should also be posted there.
+ * Implementation file for the LML (Matrix Library) containing
+ * definitions of functions declared in the lml.h header file.
  */
 
 #include "lml.h"

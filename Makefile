@@ -1,4 +1,13 @@
-
+#
+# Lightweight Matrix Library (LML) - Library Compiler
+#
+# File:     Makefile
+# Author:   James Bray
+# Repo:     https://github.com/James-Bray19/Lightweight-Matrix-Library
+#
+# This Makefile compiles the LML library for distribution 
+# should there be any changes to the source code.
+#
 
 # compiler settings
 CC = gcc

@@ -1,17 +1,12 @@
 /*
- * Lightweight Matrix Library (LML)
- * File: lml.h
- * Author: James Bray
+ * Lightweight Matrix Library (LML) - Header File
  *
- * This library provides a collection of functions for efficient manipulation
- * and operation on matrices. The library is designed for embedded systems and
- * offers functionality for generating matrices, retrieving data, performing
- * matrix operations, editing matrices, and various miscellaneous functions.
- * 
- * For more detailed documentation, see the README in the following repo:
- *      https://github.com/James-Bray19/Lightweight-Matrix-Library
- * 
- * Any contributions or issues should also be posted there.
+ * File:     lml.h
+ * Author:   James Bray
+ * Repo:     https://github.com/James-Bray19/Lightweight-Matrix-Library
+ *
+ * Implementation file for the LML (Matrix Library) containing
+ * definitions of functions declared in the lml.h header file.
  */
 
 #ifndef LIGHTWEIGHTMATRIXLIBRARY_H
