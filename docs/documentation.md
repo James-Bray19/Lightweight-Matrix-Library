@@ -1,6 +1,6 @@
 # LML Documentation
 
-This library provides a collection of functions for efficient manipulation and operation on matrices. The library is designed for embedded systems and offers functionality for generating matrices, retrieving data, performing matrix operations, editing matrices, and various miscellaneous functions.
+Lightweight Matrix Library (LML) is a collection of functions designed for efficient manipulation and operation on matrices. This library is specifically tailored for embedded systems, offering functionality for generating matrices, retrieving data, performing matrix operations, editing matrices, and various miscellaneous functions.
 
 ## Matrix Structure
 ```c
