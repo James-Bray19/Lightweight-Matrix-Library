@@ -23,8 +23,6 @@ typedef struct {
     double **data;
 } Matrix;
 
-
-
 // --------------- Generating Matrices ---------------
 
 // returns a matrix filled with zeros of size rows x cols
@@ -47,9 +45,11 @@ Matrix *random(int rows, int cols);
 // params: rows - number of rows, cols - number of columns, array - input array
 Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]);
 
-
-
 // --------------- Retrieving Data ---------------
+
+// creates a copy of the input matrix
+// params: mat - input matrix
+Matrix *copy(Matrix *mat);
 
 // returns the specified row of the matrix
 // params: mat - input matrix, row - row index
@@ -58,10 +58,6 @@ Matrix *get_row(Matrix *mat, int row);
 // returns the specified column of the matrix
 // params: mat - input matrix, col - column index
 Matrix *get_col(Matrix *mat, int col);
-
-// creates a copy of the input matrix
-// params: mat - input matrix
-Matrix *copy(Matrix *mat);
 
 // returns the lower triangular matrix of the input matrix
 // params: mat - input matrix
@@ -75,13 +71,27 @@ Matrix *get_upper(Matrix *mat);
 // params: mat - input matrix, row - starting row index, col - starting column index, rows - number of rows, cols - number of columns
 Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols);
 
-
-
 // --------------- Matrix Operations ---------------
 
 // returns the determinant of the input matrix
 // params: mat - input matrix
 double det(Matrix *mat);
+
+// returns matrix multiplied by a scalar value
+// params: mat - input matrix, scalar - scalar value
+Matrix *scaled(Matrix *mat, double scalar);
+
+// returns matrix result of scalar addition
+// params: mat - input matrix, scalar - scalar value
+Matrix *shifted(Matrix *mat, double scalar);
+
+// returns result a function element-wise to the matrix
+// params: mat - input matrix, function - function pointer to apply
+Matrix *mapped(Matrix *mat, double (*function)(double));
+
+// returns transposed matrix
+// params: input matrix
+Matrix *transpose(Matrix *mat);
 
 // returns the result of element-wise addition of two matrices
 // params: mat1 - first matrix, mat2 - second matrix
@@ -91,25 +101,9 @@ Matrix *add(Matrix *mat1, Matrix *mat2);
 // params: mat1 - first matrix, mat2 - second matrix
 Matrix *multiply(Matrix *mat1, Matrix *mat2);
 
-// returns the transpose of the input matrix
-// params: mat - input matrix
-Matrix *transposed(Matrix *mat);
-
-// Matrix *normalised(Matrix *mat);
-
-// Matrix *normalised_rows(Matrix *mat);
-
-// Matrix *normalised_cols(Matrix *mat);
-
-// Matrix *QR_decompose(Matrix *mat, Matrix **Q, Matrix **R);
-
-// decomposes the input matrix into Lower and Upper triangular matrices
-// params: mat - input matrix, Q - output Lower triangular matrix, R - output Upper triangular matrix
-Matrix *QR_decompose(Matrix *mat, Matrix **Q, Matrix **R);
-
 // decomposes the input matrix into Lower and Upper triangular matrices
 // params: mat - input matrix, L - output Lower triangular matrix, U - output Upper triangular matrix
-Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U);
+void *LU_decompose(Matrix *mat, Matrix **L, Matrix **U);
 
 // solves a system of linear equations represented by matrices
 // params: mat1 - coefficient matrix, mat2 - constant matrix
@@ -119,9 +113,7 @@ Matrix *solve(Matrix *mat1, Matrix *mat2);
 // params: mat - input matrix
 Matrix *inverse(Matrix *mat);
 
-
-
-// --------------- Matrix Editing ---------------
+// --------------- In-Place Operations ---------------
 
 // scales the matrix by a scalar value
 // params: mat - input matrix, scalar - scalar value
@@ -130,6 +122,10 @@ void scale(Matrix *mat, double scalar);
 // shifts the matrix by adding a scalar value to each element
 // params: mat - input matrix, scalar - scalar value
 void shift(Matrix *mat, double scalar);
+
+// applies a function element-wise to the matrix
+// params: mat - input matrix, function - function pointer to apply
+void map(Matrix *mat, double (*function)(double));
 
 // sets the values of a specific row in the matrix
 // params: mat - input matrix, row_index - row index, row_values - matrix of row values
@@ -162,12 +158,6 @@ void append_rows(Matrix *mat1, Matrix *mat2);
 // appends columns from mat2 to mat1
 // params: mat1 - destination matrix, mat2 - source matrix
 void append_cols(Matrix *mat1, Matrix *mat2);
-
-// applies a function element-wise to the matrix
-// params: mat - input matrix, function - function pointer to apply
-void map(Matrix *mat, double (*function)(double));
-
-
 
 // --------------- Miscellaneous Functions ---------------
 

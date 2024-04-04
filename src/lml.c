@@ -286,6 +286,26 @@ Matrix *shifted(Matrix *mat, double scalar) {
     return new_mat;
 }
 
+Matrix *mapped(Matrix *mat, double (*function)(double));
+
+Matrix *transpose(Matrix *mat) {
+    // create a new matrix with dimensions swapped
+    Matrix *transposed = zeros(mat->cols, mat->rows);
+    if (transposed == NULL) {
+        printf("Failed to create transposed matrix\n");
+        return NULL;
+    }
+
+    // copy elements from the original matrix to the transposed matrix
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            transposed->data[j][i] = mat->data[i][j];
+        }
+    }
+
+    return transposed;
+}
+
 Matrix *add(Matrix *mat1, Matrix *mat2) {
     // check if matrices have compatible dimensions
     if (mat1->rows != mat2->rows || mat1->cols != mat2->cols) {
@@ -324,39 +344,7 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2) {
     return result;
 }
 
-Matrix *mapped(Matrix *mat, double (*function)(double));
-
-Matrix *transposed(Matrix *mat) {
-    // create a new matrix with dimensions swapped
-    Matrix *transposed = zeros(mat->cols, mat->rows);
-    if (transposed == NULL) {
-        printf("Failed to create transposed matrix\n");
-        return NULL;
-    }
-
-    // copy elements from the original matrix to the transposed matrix
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            transposed->data[j][i] = mat->data[i][j];
-        }
-    }
-
-    return transposed;
-}
-
-Matrix *normalised(Matrix *mat) {
-    Matrix *n = mat;
-    scale(n, det(n));
-    return n;
-}
-
-Matrix *normalised_rows(Matrix *mat);
-
-Matrix *normalised_cols(Matrix *mat);
-
-Matrix *QR_decompose(Matrix *mat, Matrix **Q, Matrix **R);
-
-Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
+void *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
     if (mat->rows != mat->cols) {
         printf("LU decomposition requires a square matrix\n");
     }
@@ -478,7 +466,20 @@ void shift(Matrix *mat, double scalar) {
     }
 }
 
-void map(Matrix *mat, double (*function)(double));
+void map(Matrix *mat, double (*function)(double)) {
+    // Check if the pointer to the matrix is valid
+    if (mat == NULL) {
+        printf("Invalid matrix pointer\n");
+        return;
+    }
+
+    // Apply the function element-wise to the matrix
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            mat->data[i][j] = function(mat->data[i][j]);
+        }
+    }
+}
 
 void set_row(Matrix *mat, int row_index, Matrix *row_values) {
     // check if row_index is valid
@@ -670,6 +671,8 @@ void display(Matrix *mat) {
     }
 
     printf("Matrix (%d x %d):\n", mat->rows, mat->cols);
+
+    // print matrix
     for (int i = 0; i < mat->rows; i++) {
         for (int j = 0; j < mat->cols; j++) {
             printf("%8.2f ", mat->data[i][j]);
@@ -680,13 +683,12 @@ void display(Matrix *mat) {
 
 void release(Matrix *mat) {
     if (mat != NULL) {
-        // Free memory for each row
+        // free memory for each row
         for (int i = 0; i < mat->rows; i++) {
             free(mat->data[i]);
         }
-        // Free memory for the array of row pointers
+        
         free(mat->data);
-        // Free memory for the Matrix structure itself
         free(mat);
     }
 }
