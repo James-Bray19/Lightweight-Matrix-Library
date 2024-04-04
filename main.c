@@ -140,19 +140,19 @@ int main() {
 
     printf("\nInsert row:\n"); 
     mat1 = random(4, 4); display(mat1); mat2 = zeros(1, 4);
-    insert_row(&mat1, 2, mat2); display(mat1);
+    insert_row(mat1, 2, mat2); display(mat1);
 
     printf("\nInsert col:\n"); 
     mat1 = random(4, 4); display(mat1); mat2 = zeros(4, 1);
-    insert_col(&mat1, 2, mat2); display(mat1);
+    insert_col(mat1, 2, mat2); display(mat1);
 
     printf("\nAppend rows:\n"); 
     mat1 = random(3, 3); display(mat1); mat2 = zeros(2, 3);
-    append_rows(&mat1, mat2); display(mat1);
+    append_rows(mat1, mat2); display(mat1);
 
     printf("\nAppend cols:\n"); 
     mat1 = random(3, 3); display(mat1); mat2 = zeros(3, 2);
-    append_cols(&mat1, mat2); display(mat1);
+    append_cols(mat1, mat2); display(mat1);
 
     printf("\n--------------- Program Finished ---------------\n");
 

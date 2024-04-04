@@ -149,19 +149,19 @@ void remove_col(Matrix *mat, int col);
 
 // inserts a new row with the provided values at the specified row index
 // params: mat - destination matrix, row_index - row index, row_values - array of row values
-void insert_row(Matrix **mat, int row, Matrix *row_values);
+void insert_row(Matrix *mat, int row, Matrix *row_values);
 
 // inserts a new column with the provided values at the specified column index
 // params: mat - destination matrix, col_index - column index, col_values - array of column values
-void insert_col(Matrix **mat, int col, Matrix *col_values);
+void insert_col(Matrix *mat, int col, Matrix *col_values);
 
 // appends rows from mat2 to mat1
 // params: mat1 - destination matrix, mat2 - source matrix
-void append_rows(Matrix **mat1, Matrix *mat2);
+void append_rows(Matrix *mat1, Matrix *mat2);
 
 // appends columns from mat2 to mat1
 // params: mat1 - destination matrix, mat2 - source matrix
-void append_cols(Matrix **mat1, Matrix *mat2);
+void append_cols(Matrix *mat1, Matrix *mat2);
 
 // applies a function element-wise to the matrix
 // params: mat - input matrix, function - function pointer to apply
