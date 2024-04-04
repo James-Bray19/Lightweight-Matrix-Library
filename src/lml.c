@@ -266,6 +266,26 @@ double det(Matrix *mat) {
     return det;
 }
 
+Matrix *scaled(Matrix *mat, double scalar) {
+    Matrix* new_mat = copy(mat);
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            new_mat->data[i][j] *= scalar;
+        }   
+    }
+    return new_mat;
+}
+
+Matrix *shifted(Matrix *mat, double scalar) {
+    Matrix* new_mat = copy(mat);
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            new_mat->data[i][j] += scalar;
+        }   
+    }
+    return new_mat;
+}
+
 Matrix *add(Matrix *mat1, Matrix *mat2) {
     // check if matrices have compatible dimensions
     if (mat1->rows != mat2->rows || mat1->cols != mat2->cols) {
@@ -304,7 +324,9 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2) {
     return result;
 }
 
-Matrix *transpose(Matrix *mat) {
+Matrix *mapped(Matrix *mat, double (*function)(double));
+
+Matrix *transposed(Matrix *mat) {
     // create a new matrix with dimensions swapped
     Matrix *transposed = zeros(mat->cols, mat->rows);
     if (transposed == NULL) {
@@ -321,6 +343,18 @@ Matrix *transpose(Matrix *mat) {
 
     return transposed;
 }
+
+Matrix *normalised(Matrix *mat) {
+    Matrix *n = mat;
+    scale(n, det(n));
+    return n;
+}
+
+Matrix *normalised_rows(Matrix *mat);
+
+Matrix *normalised_cols(Matrix *mat);
+
+Matrix *QR_decompose(Matrix *mat, Matrix **Q, Matrix **R);
 
 Matrix *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
     if (mat->rows != mat->cols) {
@@ -443,7 +477,7 @@ Matrix *inverse(Matrix *mat) {
     return inverse_mat;
 }
 
-// --------------- Matrix Editing ---------------
+// --------------- In-Place Operations ---------------
 
 void scale(Matrix *mat, double scalar) {
     for (int i = 0; i < mat->rows; i++) {
@@ -460,6 +494,8 @@ void shift(Matrix *mat, double scalar) {
         }   
     }
 }
+
+void map(Matrix *mat, double (*function)(double));
 
 void set_row(Matrix *mat, int row_index, Matrix *row_values) {
     // check if row_index is valid
@@ -551,7 +587,9 @@ void insert_row(Matrix **mat, int row, Matrix *row_values) {
     
     // copy existing rows before insertion point
     for (int i = 0; i < row; i++) {
-        new_mat->data[i] = (*mat)->data[i];
+        for (int j = 0; j < (*mat)->cols; j++) {
+            new_mat->data[i][j] = (*mat)->data[i][j];
+        }
     }
     
     // copy the new row
@@ -561,7 +599,9 @@ void insert_row(Matrix **mat, int row, Matrix *row_values) {
 
     // copy existing rows after insertion point
     for (int i = row; i < (*mat)->rows; i++) {
-        new_mat->data[i + 1] = (*mat)->data[i];
+        for (int j = 0; j < (*mat)->cols; j++) {
+            new_mat->data[i + 1][j] = (*mat)->data[i][j];
+        }
     }
 
     release(*mat);
@@ -605,9 +645,59 @@ void insert_col(Matrix **mat, int col, Matrix *col_values) {
     *mat = new_mat;
 }
 
-void append_rows(Matrix **mat1, Matrix *mat2);
-void append_cols(Matrix **mat1, Matrix *mat2);
-void map(Matrix *mat, double (*function)(double));
+void append_rows(Matrix **mat1, Matrix *mat2) {
+    // check pointers
+    if (*mat1 == NULL || mat2 == NULL) { printf("Invalid matrix pointer\n"); return; }
+    
+    // check dimensiona
+    if ((*mat1)->cols != mat2->cols) { printf("Number of columns does not match\n"); return; }
+    
+    Matrix *new_mat = zeros((*mat1)->rows + mat2->rows, (*mat1)->cols);
+    
+    // copy data from mat1 to new_mat
+    for (int i = 0; i < (*mat1)->rows; i++) {
+        for (int j = 0; j < (*mat1)->cols; j++) {
+            new_mat->data[i][j] = (*mat1)->data[i][j];
+        }
+    }
+    
+    // copy data from mat2 to new_mat
+    for (int i = 0; i < mat2->rows; i++) {
+        for (int j = 0; j < mat2->cols; j++) {
+            new_mat->data[(*mat1)->rows + i][j] = mat2->data[i][j];
+        }
+    }
+    
+    release(*mat1);
+    *mat1 = new_mat;
+}
+
+void append_cols(Matrix **mat1, Matrix *mat2) {
+    // check pointers
+    if (*mat1 == NULL || mat2 == NULL) { printf("Invalid matrix pointer\n"); return; }
+    
+    // check dimensions
+    if ((*mat1)->rows != mat2->rows) { printf("Number of rows does not match\n"); return; }
+    
+    Matrix *new_mat = zeros((*mat1)->rows, (*mat1)->cols + mat2->cols);
+    
+    // copy data from mat1 to new_mat
+    for (int i = 0; i < (*mat1)->rows; i++) {
+        for (int j = 0; j < (*mat1)->cols; j++) {
+            new_mat->data[i][j] = (*mat1)->data[i][j];
+        }
+    }
+    
+    // copy data from mat2 to new_mat
+    for (int i = 0; i < mat2->rows; i++) {
+        for (int j = 0; j < mat2->cols; j++) {
+            new_mat->data[i][(*mat1)->cols + j] = mat2->data[i][j];
+        }
+    }
+    
+    release(*mat1);
+    *mat1 = new_mat;
+}
 
 // --------------- Miscellaneous Functions ---------------
 

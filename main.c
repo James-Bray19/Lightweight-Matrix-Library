@@ -23,6 +23,7 @@ int main() {
 
     Matrix *mat1, *mat2, *mat3;
 
+
     printf("\n--------------- Generating Matrices ---------------\n");
 
     double data[3][3] = { {  1,  2,  4 },
@@ -85,7 +86,7 @@ int main() {
     printf("%8.2f\n", det(coeffs));
 
     printf("\nTranspose coefficients:\n");
-    trans = transpose(coeffs); display(trans);
+    trans = transposed(coeffs); display(trans);
 
     printf("\nLU Decomposition:\n"); 
     LU_decompose(coeffs, &L, &U);
@@ -105,32 +106,53 @@ int main() {
 
     printf("\n--------------- Matrix Editing ---------------\n");
 
-    mat1 = identity(3); 
-    scale(mat1, 2); printf("\nScale:\n"); display(mat1);
-    shift(mat1, 0.5); printf("\nShift:\n"); display(mat1);
+    mat1 = identity(3);
+
+    printf("\nScale:\n");
+    scale(mat1, 2); display(mat1);
+
+    printf("\nShift:\n");
+    shift(mat1, 0.5); display(mat1);
     
-    mat2 = ones(3, 3);
-    mat3 = multiply(mat1, mat2); printf("\nMultiply:\n"); display(mat3);
-    mat3 = add(mat1, mat2); printf("\nAdd:\n"); display(mat3);
+    printf("\nMultiply:\n");
+    mat1 = identity(3); scale(mat1, 5); mat2 = ones(3, 3);
+    mat3 = multiply(mat1, mat2); display(mat3);
+
+    printf("\nAdd:\n");
+    mat1 = identity(3); scale(mat1, 3); mat2 = zeros(3, 3);
+    mat3 = add(mat1, mat2); display(mat3);
 
     mat1 = zeros(4, 4); 
-    mat2 = ones(1, 4); set_row(mat1, 1, mat2); 
-    printf("\nSet row:\n"); display(mat1);
-    mat2 = ones(4, 1); set_col(mat1, 1, mat2); 
-    printf("\nSet col:\n"); display(mat1);
 
-    remove_row(mat1, 1); printf("\nRemove row:\n"); display(mat1);
-    remove_col(mat1, 1); printf("\nRemove column:\n"); display(mat1);
+    printf("\nSet row:\n");
+    mat2 = ones(1, 4);
+    set_row(mat1, 1, mat2); display(mat1);
 
-    mat1 = random(5, 5); display(mat1);
-    mat2 = ones(5, 1); scale(mat2, 888); insert_col(&mat1, 1, mat2);
-    printf("\nInsert col:\n"); display(mat1);
+    printf("\nSet col:\n"); 
+    mat2 = ones(4, 1); 
+    set_col(mat1, 1, mat2); display(mat1);
 
-    mat1 = random(5, 5); display(mat1);
-    mat2 = ones(1, 5); scale(mat2, 888); insert_row(&mat1, 1, mat2);
-    printf("\nInsert row:\n"); display(mat1);
+    printf("\nRemove row:\n");
+    remove_row(mat1, 1); display(mat1);
 
+    printf("\nRemove column:\n");
+    remove_col(mat1, 1); display(mat1);
 
+    printf("\nInsert row:\n"); 
+    mat1 = random(4, 4); display(mat1); mat2 = zeros(1, 4);
+    insert_row(&mat1, 2, mat2); display(mat1);
+
+    printf("\nInsert col:\n"); 
+    mat1 = random(4, 4); display(mat1); mat2 = zeros(4, 1);
+    insert_col(&mat1, 2, mat2); display(mat1);
+
+    printf("\nAppend rows:\n"); 
+    mat1 = random(3, 3); display(mat1); mat2 = zeros(2, 3);
+    append_rows(&mat1, mat2); display(mat1);
+
+    printf("\nAppend cols:\n"); 
+    mat1 = random(3, 3); display(mat1); mat2 = zeros(3, 2);
+    append_cols(&mat1, mat2); display(mat1);
 
     printf("\n--------------- Program Finished ---------------\n");
 

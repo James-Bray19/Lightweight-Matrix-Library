@@ -93,7 +93,19 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2);
 
 // returns the transpose of the input matrix
 // params: mat - input matrix
-Matrix *transpose(Matrix *mat);
+Matrix *transposed(Matrix *mat);
+
+// Matrix *normalised(Matrix *mat);
+
+// Matrix *normalised_rows(Matrix *mat);
+
+// Matrix *normalised_cols(Matrix *mat);
+
+// Matrix *QR_decompose(Matrix *mat, Matrix **Q, Matrix **R);
+
+// decomposes the input matrix into Lower and Upper triangular matrices
+// params: mat - input matrix, Q - output Lower triangular matrix, R - output Upper triangular matrix
+Matrix *QR_decompose(Matrix *mat, Matrix **Q, Matrix **R);
 
 // decomposes the input matrix into Lower and Upper triangular matrices
 // params: mat - input matrix, L - output Lower triangular matrix, U - output Upper triangular matrix
