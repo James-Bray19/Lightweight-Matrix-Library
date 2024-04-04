@@ -1,5 +1,6 @@
 # LML Documentation
-Contains definitions and explanations for each function in the LML library.
+
+This library provides a collection of functions for efficient manipulation and operation on matrices. The library is designed for embedded systems and offers functionality for generating matrices, retrieving data, performing matrix operations, editing matrices, and various miscellaneous functions.
 
 ## Matrix Structure
 ```c
