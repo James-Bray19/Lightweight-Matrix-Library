@@ -322,7 +322,7 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2) {
     return result;
 }
 
-void *LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
+void LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
     if (mat->rows != mat->cols) {
         printf("LU decomposition requires a square matrix\n");
     }

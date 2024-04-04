@@ -91,7 +91,7 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2);
 
 // decomposes the input matrix into Lower and Upper triangular matrices
 // params: mat - input matrix, L - output Lower triangular matrix, U - output Upper triangular matrix
-void *LU_decompose(Matrix *mat, Matrix **L, Matrix **U);
+void LU_decompose(Matrix *mat, Matrix **L, Matrix **U);
 
 // solves a system of linear equations represented by matrices
 // params: mat1 - coefficient matrix, mat2 - constant matrix
