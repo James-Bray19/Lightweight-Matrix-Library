@@ -14,4 +14,3 @@ lib/liblml.a: src/lml.c
 # clean up generated files
 clean:
 	rm -f main lib/liblml.a
-
