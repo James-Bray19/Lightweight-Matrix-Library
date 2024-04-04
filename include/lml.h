@@ -77,18 +77,6 @@ Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols);
 // params: mat - input matrix
 double det(Matrix *mat);
 
-// returns matrix multiplied by a scalar value
-// params: mat - input matrix, scalar - scalar value
-Matrix *scaled(Matrix *mat, double scalar);
-
-// returns matrix result of scalar addition
-// params: mat - input matrix, scalar - scalar value
-Matrix *shifted(Matrix *mat, double scalar);
-
-// returns result a function element-wise to the matrix
-// params: mat - input matrix, function - function pointer to apply
-Matrix *mapped(Matrix *mat, double (*function)(double));
-
 // returns transposed matrix
 // params: input matrix
 Matrix *transpose(Matrix *mat);

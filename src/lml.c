@@ -266,28 +266,6 @@ double det(Matrix *mat) {
     return det;
 }
 
-Matrix *scaled(Matrix *mat, double scalar) {
-    Matrix* new_mat = copy(mat);
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            new_mat->data[i][j] *= scalar;
-        }   
-    }
-    return new_mat;
-}
-
-Matrix *shifted(Matrix *mat, double scalar) {
-    Matrix* new_mat = copy(mat);
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            new_mat->data[i][j] += scalar;
-        }   
-    }
-    return new_mat;
-}
-
-Matrix *mapped(Matrix *mat, double (*function)(double));
-
 Matrix *transpose(Matrix *mat) {
     // create a new matrix with dimensions swapped
     Matrix *transposed = zeros(mat->cols, mat->rows);

@@ -22,8 +22,5 @@
 double my_func(double x) { return x + 5; }
 
 int main() {
-    Matrix *mat = random(5, 5);
-    map(mat, my_func);
-    display(mat);
     return 0;
 }
