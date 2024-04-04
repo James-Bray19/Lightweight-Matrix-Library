@@ -25,14 +25,21 @@ SRC_FILES := $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES := $(patsubst $(SRC_DIR)/%.c, $(LIB_DIR)/%.o, $(SRC_FILES))
 
 # target library
-LIB_NAME = liblml.so
-TARGET_LIB = $(LIB_DIR)/$(LIB_NAME)
+DLL_NAME = liblml.dll
+SO_NAME = liblml.so
+
+TARGET_DLL = $(LIB_DIR)/$(DLL_NAME)
+TARGET_SO = $(LIB_DIR)/$(SO_NAME)
 
 # targets
-all: $(TARGET_LIB)
+all: $(TARGET_DLL) $(TARGET_SO)
 
-# build the shared library
-$(TARGET_LIB): $(OBJ_FILES)
+# build the shared library (SO)
+$(TARGET_SO): $(OBJ_FILES)
+	$(CC) -shared -o $@ $^
+
+# build the dynamic link library (DLL)
+$(TARGET_DLL): $(OBJ_FILES)
 	$(CC) -shared -o $@ $^
 
 # compile source files
@@ -45,4 +52,4 @@ $(LIB_DIR):
 
 # clean generated files
 clean:
-	rm -rf $(LIB_DIR)/*.o $(TARGET_LIB)
+	rm -rf $(LIB_DIR)/*.o $(TARGET_DLL) $(TARGET_SO)
