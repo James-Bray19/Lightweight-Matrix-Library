@@ -14,4 +14,4 @@ Please see `docs/documentation.md` for a more detailed explanation of this libra
 
 ## Contributions
 
-Any contributions or issues related to the Lightweight Matrix Library can be posted in [this GitHub repository](https://github.com/James-Bray19/Lightweight-Matrix-Library). Your feedback is greatly appreciated!
+Any contributions or issues related to the Lightweight Matrix Library can be posted in the issues section. Your feedback is greatly appreciated!
