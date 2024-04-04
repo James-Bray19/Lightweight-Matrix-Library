@@ -6,7 +6,7 @@
 
 ## Usage
 
-To use the Lightweight Matrix Library in your project, follow these steps:
+### Using the library
 
 1. **Include Header File**: 
    - In your C program, include the `lml.h` header file to gain access to the library's functions and data structures.
@@ -31,6 +31,20 @@ To use the Lightweight Matrix Library in your project, follow these steps:
    ```bash
    ./my_program
    ```
+
+### Modifying the library
+
+1. **Modify the Source and Header Files**:
+   - Make the necessary changes to the source files (`lml.c`) and header file (`lml.h`) according to your requirements.
+
+2. **Compile the Library**:
+   - Use the provided Makefile included in the repository to compile the library. Please edit the Makefile should you require a different library format.
+
+3. **Test Your Changes**:
+   - Before submitting your changes, it's essential to test them thoroughly to ensure that they work as expected.
+
+4. **Submit a Pull Request**:
+   - Once you are satisfied with your changes and have tested them thoroughly, submit a pull request to the repository.
 
 ## Matrix Structure
 ```c
