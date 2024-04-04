@@ -1,150 +1,176 @@
+# LML Documentation
+Contains definitions and explanations for each function in the LML library.
 
-Matrix *mat1, *mat2, *mat3;
+## Matrix Structure
+```c
+typedef struct {
+    int rows;
+    int cols;
+    double **data;
+} Matrix;
+```
 
+The `Matrix` structure represents a two-dimensional matrix and consists of the following members:
 
-printf("\n--------------- Generating Matrices ---------------\n");
+- `rows`: An integer representing the number of rows in the matrix.
+- `cols`: An integer representing the number of columns in the matrix.
+- `data`: A pointer to a two-dimensional array of double values, which stores the actual data of the matrix.
 
-double data[3][3] = { {  1,  2,  4 },
-                        {  3,  8, 14 },
-                        {  2,  6, 13 } };
+The `Matrix` structure is used as the fundamental data type in the LML library to perform various matrix operations and manipulations. It provides a flexible and efficient way to work with matrices in C programming.
 
-printf("\nGenerate zeros:\n");
-mat1 = zeros(2, 4); display(mat1);
+## Functions
 
-printf("\nGenerate ones:\n");
-mat1 = ones(3, 5); display(mat1);
+#### `Matrix *zeros(int rows, int cols);`
+> This function returns a matrix filled with zeros of the specified size.
+> - `int rows`: Number of rows in the matrix.
+> - `int cols`: Number of columns in the matrix.
 
-printf("\nGenerate identity:\n");
-mat1 = identity(4); display(mat1);
+#### `Matrix *ones(int rows, int cols);`
+> This function returns a matrix filled with ones of the specified size.
+> - `int rows`: Number of rows in the matrix.
+> - `int cols`: Number of columns in the matrix.
 
-printf("\nGenerate random:\n");
-mat1 = random(6, 2); display(mat1);
+#### `Matrix *identity(int size);`
+> This function returns an identity matrix of the specified size.
+> - `int size`: Size of the identity matrix.
 
-printf("\nGenerate from array:\n"); 
-mat1 = matrix_from_array(3, 3, data); display(mat1);
+#### `Matrix *random(int rows, int cols);`
+> This function returns a matrix filled with random values of the specified size.
+> - `int rows`: Number of rows in the matrix.
+> - `int cols`: Number of columns in the matrix.
 
+#### `Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]);`
+> This function creates a matrix from a 2D array.
+> - `int rows`: Number of rows in the matrix.
+> - `int cols`: Number of columns in the matrix.
+> - `double array[rows][cols]`: Input array to create the matrix from.
 
+#### `Matrix *copy(Matrix *mat);`
+> This function creates a copy of the input matrix.
+> - `Matrix *mat`: Input matrix to be copied.
 
-printf("\n--------------- Retrieving Data ---------------\n");
+#### `Matrix *get_row(Matrix *mat, int row);`
+> This function returns the specified row of the matrix.
+> - `Matrix *mat`: Input matrix.
+> - `int row`: Row index.
 
-printf("\nThe following section will use this matrix:\n");
-mat1 = random(4, 4); display(mat1);
+#### `Matrix *get_col(Matrix *mat, int col);`
+> This function returns the specified column of the matrix.
+> - `Matrix *mat`: Input matrix.
+> - `int col`: Column index.
 
-printf("\nGet row:\n");
-mat2 = get_row(mat1, 1); display(mat2);
+#### `Matrix *get_lower(Matrix *mat);`
+> This function returns the lower triangular matrix of the input matrix.
+> - `Matrix *mat`: Input matrix.
 
-printf("\nGet col:\n");
-mat2 = get_col(mat1, 1); display(mat2);
+#### `Matrix *get_upper(Matrix *mat);`
+> This function returns the upper triangular matrix of the input matrix.
+> - `Matrix *mat`: Input matrix.
 
-printf("\nCopy of matrix:\n");
-mat2 = copy(mat1); display(mat2);
+#### `Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols);`
+> This function returns a submatrix of the input matrix.
+> - `Matrix *mat`: Input matrix.
+> - `int row`: Starting row index.
+> - `int col`: Starting column index.
+> - `int rows`: Number of rows in the submatrix.
+> - `int cols`: Number of columns in the submatrix.
 
-printf("\nGet lower triangle:\n");
-mat2 = get_lower(mat1); display(mat2);
+#### `double det(Matrix *mat);`
+> This function returns the determinant of the input matrix.
+> - `Matrix *mat`: Input matrix.
 
-printf("\nGet upper triangle:\n");
-mat2 = get_upper(mat1); display(mat2);
+#### `Matrix *transpose(Matrix *mat);`
+> This function returns the transposed matrix.
+> - `Matrix *mat`: Input matrix.
 
-printf("\nGet submatrix:\n");
-mat2 = get_submatrix(mat1, 1, 1, 2, 2); display(mat2);
+#### `Matrix *add(Matrix *mat1, Matrix *mat2);`
+> This function returns the result of element-wise addition of two matrices.
+> - `Matrix *mat1`: First matrix.
+> - `Matrix *mat2`: Second matrix.
 
+#### `Matrix *multiply(Matrix *mat1, Matrix *mat2);`
+> This function returns the result of matrix multiplication of two matrices.
+> - `Matrix *mat1`: First matrix.
+> - `Matrix *mat2`: Second matrix.
 
+#### `void *LU_decompose(Matrix *mat, Matrix **L, Matrix **U);`
+> This function decomposes the input matrix into Lower and Upper triangular matrices.
+> - `Matrix *mat`: Input matrix.
+> - `Matrix **L`: Output Lower triangular matrix.
+> - `Matrix **U`: Output Upper triangular matrix.
 
-printf("\n--------------- Matrix Operations ---------------\n");
+#### `Matrix *solve(Matrix *mat1, Matrix *mat2);`
+> This function solves a system of linear equations represented by matrices.
+> - `Matrix *mat1`: Coefficient matrix.
+> - `Matrix *mat2`: Constant matrix.
 
-Matrix *coeffs, *consts, *L, *U, *trans, *inv, *sol;
+#### `Matrix *inverse(Matrix *mat);`
+> This function returns the inverse of the input matrix.
+> - `Matrix *mat`: Input matrix.
 
-printf("\nCoeffiecient Matrix:\n");
-coeffs = random(6, 6); display(coeffs);
+#### `void scale(Matrix *mat, double scalar);`
+> This function scales the matrix by a scalar value.
+> - `Matrix *mat`: Input matrix.
+> - `double scalar`: Scalar value.
 
-printf("\nConstants:\n");
-consts = random(6, 1); display(consts);
+#### `void shift(Matrix *mat, double scalar);`
+> This function shifts the matrix by adding a scalar value to each element.
+> - `Matrix *mat`: Input matrix.
+> - `double scalar`: Scalar value.
 
-printf("\nDeterminant of coefficient matrix:\n");
-printf("%8.2f\n", det(coeffs));
+#### `void map(Matrix *mat, double (*function)(double));`
+> This function applies a function element-wise to the matrix.
+> - `Matrix *mat`: Input matrix.
+> - `double (*function)(double)`: Function pointer to apply.
 
-printf("\nTranspose coefficients:\n");
-trans = transposed(coeffs); display(trans);
+#### `void set_row(Matrix *mat, int row_index, Matrix *row_values);`
+> This function sets the values of a specific row in the matrix.
+> - `Matrix *mat`: Input matrix.
+> - `int row_index`: Row index.
+> - `Matrix *row_values`: Matrix of row values.
 
-printf("\nLU Decomposition:\n"); 
-LU_decompose(coeffs, &L, &U);
-printf("\nLower:\n"); display(L); 
-printf("\nUpper:\n"); display(U);
+#### `void set_col(Matrix *mat, int col_index, Matrix *col_values);`
+> This function sets the values of a specific column in the matrix.
+> - `Matrix *mat`: Input matrix.
+> - `int col_index`: Column index.
+> - `Matrix *col_values`: Matrix of column values.
 
-printf("\nGaussian Solution:\n");
-sol = solve(coeffs, consts); display(sol);
+#### `void remove_row(Matrix *mat, int row);`
+> This function removes a row from the matrix.
+> - `Matrix *mat`: Input matrix.
+> - `int row`: Index of row to remove.
 
-printf("\nInverse:\n");
-inv = inverse(coeffs); display(inv);
+#### `void remove_col(Matrix *mat, int col);`
+> This function removes a column from the matrix.
+> - `Matrix *mat`: Input matrix.
+> - `int col`: Index of column to remove.
 
-printf("\nInverse Solution:\n");
-sol = multiply(inv, consts); display(sol);
+#### `void insert_row(Matrix *mat, int row, Matrix *row_values);`
+> This function inserts a new row with the provided values at the specified row index.
+> - `Matrix *mat`: Destination matrix.
+> - `int row`: Row index.
+> - `Matrix *row_values`: Array of row values.
 
+#### `void insert_col(Matrix *mat, int col, Matrix *col_values);`
+> This function inserts a new column with the provided values at the specified column index.
+> - `Matrix *mat`: Destination matrix.
+> - `int col`: Column index.
+> - `Matrix *col_values`: Array of column values.
 
+#### `void append_rows(Matrix *mat1, Matrix *mat2);`
+> This function appends rows from mat2 to mat1.
+> - `Matrix *mat1`: Destination matrix.
+> - `Matrix *mat2`: Source matrix.
 
-printf("\n--------------- In-Place Operations ---------------\n");
+#### `void append_cols(Matrix *mat1, Matrix *mat2);`
+> This function appends columns from mat2 to mat1.
+> - `Matrix *mat1`: Destination matrix.
+> - `Matrix *mat2`: Source matrix.
 
-mat1 = identity(3);
+#### `void display(Matrix *mat);`
+> This function displays the content of the matrix.
+> - `Matrix *mat`: Input matrix.
 
-printf("\nScale:\n");
-scale(mat1, 2); display(mat1);
-
-printf("\nShift:\n");
-shift(mat1, 0.5); display(mat1);
-
-printf("\nMultiply:\n");
-mat1 = identity(3); scale(mat1, 5); mat2 = ones(3, 3);
-mat3 = multiply(mat1, mat2); display(mat3);
-
-printf("\nAdd:\n");
-mat1 = identity(3); scale(mat1, 3); mat2 = zeros(3, 3);
-mat3 = add(mat1, mat2); display(mat3);
-
-mat1 = zeros(4, 4); 
-
-printf("\nSet row:\n");
-mat2 = ones(1, 4);
-set_row(mat1, 1, mat2); display(mat1);
-
-printf("\nSet col:\n"); 
-mat2 = ones(4, 1); 
-set_col(mat1, 1, mat2); display(mat1);
-
-printf("\nRemove row:\n");
-remove_row(mat1, 1); display(mat1);
-
-printf("\nRemove column:\n");
-remove_col(mat1, 1); display(mat1);
-
-printf("\nInsert row:\n"); 
-mat1 = random(4, 4); display(mat1); mat2 = zeros(1, 4);
-insert_row(mat1, 2, mat2); display(mat1);
-
-printf("\nInsert col:\n"); 
-mat1 = random(4, 4); display(mat1); mat2 = zeros(4, 1);
-insert_col(mat1, 2, mat2); display(mat1);
-
-printf("\nAppend rows:\n"); 
-mat1 = random(3, 3); display(mat1); mat2 = zeros(2, 3);
-append_rows(mat1, mat2); display(mat1);
-
-printf("\nAppend cols:\n"); 
-mat1 = random(3, 3); display(mat1); mat2 = zeros(3, 2);
-append_cols(mat1, mat2); display(mat1);
-
-printf("\n--------------- Program Finished ---------------\n");
-
-// release memory after processing
-release(mat1); release(mat2); release(mat3);
-release(coeffs); release(consts); release(L); release(U);
-release(trans); release(inv); release(sol);
-
-
-double my_func(double x) { return x + 5; }
-
-int main() {
-    Matrix *mat = random(5, 5);
-    map(mat, my_func);
-    display(mat);
-    return 0;
-}
+#### `void release(Matrix *mat);`
+> This function releases memory allocated for the matrix.
+> - `Matrix *mat`: Input matrix.
