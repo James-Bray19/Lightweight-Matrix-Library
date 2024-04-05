@@ -14,14 +14,8 @@
    #include "lml.h"
    ```
 
-2. **Compile Your Program**: 
-   - Use the provided Makefile to compile your program. If you want to make changes to the library code (`lml.c`), you can do so and then recompile your program using the Makefile.
-   ```bash
-   make
-   ```
-
 3. **Link Against the Library**: 
-   - When compiling your program, ensure that you link against the library files (`lib/liblml.so`).
+   - When compiling your program, ensure that you link against the library files (`lib/liblml.so` or `lib/liblml.dll`).
    ```bash
    gcc -o your_program your_program.c -Llib -llml
    ```
