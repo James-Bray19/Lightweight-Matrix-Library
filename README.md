@@ -6,44 +6,42 @@
 
 ## Usage
 
-### Using the library
+### Using the Library
 
 1. **Include Header File**: 
-   - In your C program, include the `lml.h` header file to gain access to the library's functions and data structures.
+   - To access the library's functions and data structures in your C program, include the `lml.h` header file.
    ```c
    #include "lml.h"
    ```
 
-3. **Link Against the Library**: 
-   - When compiling your program, ensure that you link against the library files (`lib/liblml.so` or `lib/liblml.dll`).
+2. **Link Against the Library**: 
+   - Make sure to include the include and lib folders in the same directory as your C code, then compile with LML.
    ```bash
    gcc -o your_program your_program.c -Llib -llml
    ```
 
-4. **Run Your Program**: 
-   - After successfully compiling your program, you can run the executable as usual.
+3. **Run Your Program**: 
+   - After successfully compiling your program, execute the generated executable.
    ```bash
-   ./my_program
+   ./your_program
    ```
 
-### Modifying the library
+### Modifying the Library
 
 1. **Modify the Source and Header Files**:
-   - Make the necessary changes to the source files (`lml.c`) and header file (`lml.h`) according to your requirements.
+   - Make necessary changes to the source files (`lml.c`) and header file (`lml.h`) according to your requirements.
 
 2. **Compile the Library**:
-   - Use the provided Makefile included in the repository to compile the library. This should compile the library in the following formats:
-     - `lib/liblml.a`
-     - `lib/liblml.dll`
-     - `lib/liblml.so`
-   
-   Please edit the Makefile should you require a different library format.
+   - Utilize the provided Makefile to compile the library into various formats, including:
+     - `lib/liblml.a` (static library)
+     - `lib/liblml.dll` (dynamic library for Windows)
+     - `lib/liblml.so` (shared object library for Linux)
 
 3. **Test Your Changes**:
-   - Before submitting your changes, it's essential to test them thoroughly to ensure that they work as expected.
+   - Thoroughly test your modifications to ensure they meet the desired functionality and do not introduce any regressions.
 
 4. **Submit a Pull Request**:
-   - Once you are satisfied with your changes and have tested them thoroughly, submit a pull request to the repository.
+   - Once satisfied with your changes and after comprehensive testing, submit a pull request to contribute your modifications to the repository.
 
 ## Matrix Structure
 ```c
