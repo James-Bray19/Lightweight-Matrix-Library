@@ -121,6 +121,10 @@ void set_row(Matrix *mat, int row_index, Matrix *row_values);
 // params: mat - input matrix, col_index - column index, col_values - matrix of column values
 void set_col(Matrix *mat, int col_index, Matrix *col_values);
 
+// sets the values of a submatrix inside a larger matrix
+// params: mat - input matrix, row - starting index, col - starting row, sub - submatrix to insert
+void set_submatrix(Matrix *mat, int row, int col, Matrix *sub);
+
 // removes a row from the matrix
 // params: mat - input matrix, row - index of row to remove
 void remove_row(Matrix *mat, int row);
