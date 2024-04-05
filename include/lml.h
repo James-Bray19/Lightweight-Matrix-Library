@@ -12,10 +12,13 @@
 #ifndef LIGHTWEIGHTMATRIXLIBRARY_H
 #define LIGHTWEIGHTMATRIXLIBRARY_H
 
+// --------------- Matrix Structure ---------------
+
+// the Matrix structure used as the fundamental data type in the LML library
 typedef struct {
-    int rows;
-    int cols;
-    double **data;
+    int rows; // number of rows in the matrix
+    int cols; // number of columns in the matrix.
+    double **data; // pointer to a 2D array of doubles, which stores the matrix data
 } Matrix;
 
 // --------------- Generating Matrices ---------------
