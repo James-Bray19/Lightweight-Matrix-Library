@@ -400,7 +400,7 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2) {
 
     // input validation
     if (mat1 == NULL || mat2 == NULL) { log_error(__func__, "invalid input matrices"); return NULL; }
-    if (mat1->rows != mat2->cols) { log_error(__func__, "dimension mismatch"); return NULL; }
+    if (mat1->cols != mat2->rows) { log_error(__func__, "dimension mismatch"); return NULL; }
 
     // multiply matrices together
     Matrix *result = zeros(mat1->rows, mat2->cols);
