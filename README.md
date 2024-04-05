@@ -32,7 +32,12 @@
    - Make the necessary changes to the source files (`lml.c`) and header file (`lml.h`) according to your requirements.
 
 2. **Compile the Library**:
-   - Use the provided Makefile included in the repository to compile the library. Please edit the Makefile should you require a different library format.
+   - Use the provided Makefile included in the repository to compile the library. This should compile the library in the following formats:
+     - `lib/liblml.a`
+     - `lib/liblml.dll`
+     - `lib/liblml.so`
+   
+   Please edit the Makefile should you require a different library format.
 
 3. **Test Your Changes**:
    - Before submitting your changes, it's essential to test them thoroughly to ensure that they work as expected.
