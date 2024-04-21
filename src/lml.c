@@ -62,7 +62,7 @@ Matrix *zeros(int rows, int cols) {
     return mat;
 }
 
-Matrix *constant(int rows, int cols, int value) {
+Matrix *constants(int rows, int cols, int value) {
     
     // input validation
     if (rows <= 0 || cols <= 0) { lml_error(__func__, "invalid dimensions"); return NULL; }

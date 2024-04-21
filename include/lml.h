@@ -33,7 +33,7 @@ Matrix *zeros(int rows, int cols);
 /// @param rows number of rows
 /// @param cols number of columns
 /// @return matrix filled with specified value
-Matrix *constant(int rows, int cols, int value);
+Matrix *constants(int rows, int cols, int value);
 
 /// @brief returns an identity matrix of size size x size
 /// @param size size of the identity matrix
