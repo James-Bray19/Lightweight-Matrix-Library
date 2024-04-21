@@ -16,7 +16,7 @@
 
 // --------------- Static Functions ---------------
 
-static void log_error(const char *function_name, const char *error) {
+static void lml_error(const char *function_name, const char *error) {
     // format the error
     printf("\n[LML Error]: in function '%s' - %s.\n", function_name, error);
 }
@@ -26,12 +26,12 @@ static void log_error(const char *function_name, const char *error) {
 Matrix *zeros(int rows, int cols) {
     
     // input validation
-    if (rows <= 0 || cols <= 0) { log_error(__func__, "invalid dimensions"); return NULL; }
+    if (rows <= 0 || cols <= 0) { lml_error(__func__, "invalid dimensions"); return NULL; }
 
     // allocate memory for matrix
     Matrix *mat = malloc(sizeof(Matrix));
     if (mat == NULL) {
-        log_error(__func__, "memory allocation failed");
+        lml_error(__func__, "memory allocation failed");
         return NULL; 
     }
 
@@ -39,7 +39,7 @@ Matrix *zeros(int rows, int cols) {
     mat->data = malloc(rows * sizeof(double *));
     if (mat->data == NULL) { 
         free(mat); 
-        log_error(__func__, "memory allocation failed");
+        lml_error(__func__, "memory allocation failed");
         return NULL; 
     }
 
@@ -51,7 +51,7 @@ Matrix *zeros(int rows, int cols) {
         if (mat->data[i] == NULL) {
             for (int j = 0; j < i; j++) { free(mat->data[j]); }
             free(mat->data); free(mat); 
-            log_error(__func__, "memory allocation failed");
+            lml_error(__func__, "memory allocation failed");
             return NULL;
         }
     }
@@ -62,43 +62,20 @@ Matrix *zeros(int rows, int cols) {
     return mat;
 }
 
-Matrix *ones(int rows, int cols) {
+Matrix *constant(int rows, int cols, int value) {
     
     // input validation
-    if (rows <= 0 || cols <= 0) { log_error(__func__, "invalid dimensions"); return NULL; }
+    if (rows <= 0 || cols <= 0) { lml_error(__func__, "invalid dimensions"); return NULL; }
 
     // allocate memory for matrix
-    Matrix *mat = malloc(sizeof(Matrix));
-    if (mat == NULL) {
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
+    Matrix *mat = zeros(rows, cols);
 
-    // allocate memory for data
-    mat->data = malloc(rows * sizeof(double *));
-    if (mat->data == NULL) { 
-        free(mat); 
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
-
-    // initialize matrix elements to one
+    // initialize matrix elements to specific value
     for (int i = 0; i < rows; i++) {
-        mat->data[i] = calloc(cols, sizeof(double));
-
-        // handle errors
-        if (mat->data[i] == NULL) {
-            for (int j = 0; j < i; j++) { free(mat->data[j]); }
-            free(mat->data); free(mat); 
-            log_error(__func__, "memory allocation failed");
-            return NULL;
+        for (int j = 0; j < cols; j++) { 
+            mat->data[i][j] = value; 
         }
-
-        for (int j = 0; j < cols; j++) { mat->data[i][j] = 1.0; }
     }
-    
-    mat->rows = rows;
-    mat->cols = cols;
 
     return mat;
 }
@@ -106,35 +83,10 @@ Matrix *ones(int rows, int cols) {
 Matrix *identity(int size) {
     
     // input validation
-    if (size <= 0) { log_error(__func__, "invalid size"); return NULL; }
+    if (size <= 0) { lml_error(__func__, "invalid size"); return NULL; }
 
     // allocate memory for matrix
-    Matrix *mat = malloc(sizeof(Matrix));
-    if (mat == NULL) {
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
-
-    // allocate memory for data
-    mat->data = malloc(size * sizeof(double *));
-    if (mat->data == NULL) { 
-        free(mat); 
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
-
-    // initialize matrix elements to zero
-    for (int i = 0; i < size; i++) {
-        mat->data[i] = calloc(size, sizeof(double));
-
-        // handle errors
-        if (mat->data[i] == NULL) {
-            for (int j = 0; j < i; j++) { free(mat->data[j]); }
-            free(mat->data); free(mat); 
-            log_error(__func__, "memory allocation failed");
-            return NULL;
-        }
-    }
+    Matrix *mat = zeros(size, size);
 
     // set leading diagonal to 1
     for (int i = 0; i < size; i++) { mat->data[i][i] = 1.0; }
@@ -148,43 +100,20 @@ Matrix *identity(int size) {
 Matrix *random(int rows, int cols) {
     
     // input validation
-    if (rows <= 0 || cols <= 0) { log_error(__func__, "invalid dimensions"); return NULL; }
+    if (rows <= 0 || cols <= 0) { lml_error(__func__, "invalid dimensions"); return NULL; }
 
     // set generator seed
     srand((unsigned int)(time(NULL) * clock()));
 
-        // allocate memory for matrix
-    Matrix *mat = malloc(sizeof(Matrix));
-    if (mat == NULL) {
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
-
-    // allocate memory for data
-    mat->data = malloc(rows * sizeof(double *));
-    if (mat->data == NULL) { 
-        free(mat); 
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
-
-    // initialize matrix elements to one
+    // allocate memory for matrix
+    Matrix *mat = zeros(rows, cols);
+    
+    // initialize matrix elements to random values
     for (int i = 0; i < rows; i++) {
-        mat->data[i] = calloc(cols, sizeof(double));
-
-        // handle errors
-        if (mat->data[i] == NULL) {
-            for (int j = 0; j < i; j++) { free(mat->data[j]); }
-            free(mat->data); free(mat); 
-            log_error(__func__, "memory allocation failed");
-            return NULL;
+        for (int j = 0; j < cols; j++) { 
+            mat->data[i][j] = (double)rand() / RAND_MAX; 
         }
-
-        for (int j = 0; j < cols; j++) { mat->data[i][j] = (double)rand() / RAND_MAX; }
     }
-
-    mat->rows = rows;
-    mat->cols = cols;
 
     return mat;
 }
@@ -192,41 +121,18 @@ Matrix *random(int rows, int cols) {
 Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]) {
     
     // input validation
-    if (rows <= 0 || cols <= 0) { log_error(__func__, "invalid dimensions"); return NULL; }
-    if (array == NULL) { log_error(__func__, "invalid array"); return NULL; }
+    if (rows <= 0 || cols <= 0) { lml_error(__func__, "invalid dimensions"); return NULL; }
+    if (array == NULL) { lml_error(__func__, "invalid array"); return NULL; }
 
     // allocate memory for matrix
-    Matrix *mat = malloc(sizeof(Matrix));
-    if (mat == NULL) {
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
+    Matrix *mat = zeros(rows, cols);
 
-    // allocate memory for data
-    mat->data = malloc(rows * sizeof(double *));
-    if (mat->data == NULL) { 
-        free(mat); 
-        log_error(__func__, "memory allocation failed");
-        return NULL; 
-    }
-
-    // initialize matrix elements to one
+    // copy the array data to the matrix
     for (int i = 0; i < rows; i++) {
-        mat->data[i] = calloc(cols, sizeof(double));
-
-        // handle errors
-        if (mat->data[i] == NULL) {
-            for (int j = 0; j < i; j++) { free(mat->data[j]); }
-            free(mat->data); free(mat); 
-            log_error(__func__, "memory allocation failed");
-            return NULL;
+        for (int j = 0; j < cols; j++) { 
+            mat->data[i][j] = array[i][j]; 
         }
-
-        for (int j = 0; j < cols; j++) { mat->data[i][j] = array[i][j]; }
     }
-
-    mat->rows = rows;
-    mat->cols = cols;
 
     return mat;
 }
@@ -236,7 +142,7 @@ Matrix *matrix_from_array(int rows, int cols, double array[rows][cols]) {
 Matrix *copy(Matrix *mat) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
 
     // create a new matrix with the same dimensions as the original
     Matrix *copied_matrix = zeros(mat->rows, mat->cols);
@@ -254,8 +160,8 @@ Matrix *copy(Matrix *mat) {
 Matrix *get_row(Matrix *mat, int row) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
-    if (row < 0 || row >= mat->rows) { log_error(__func__, "invalid row index"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
+    if (row < 0 || row >= mat->rows) { lml_error(__func__, "invalid row index"); return NULL; }
 
     // create a new matrix to represent the row
     Matrix *row_matrix = zeros(1, mat->cols);
@@ -271,8 +177,8 @@ Matrix *get_row(Matrix *mat, int row) {
 Matrix *get_col(Matrix *mat, int col) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
-    if (col < 0 || col >= mat->cols) { log_error(__func__, "invalid column index"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
+    if (col < 0 || col >= mat->cols) { lml_error(__func__, "invalid column index"); return NULL; }
 
     // create a new matrix to represent the column
     Matrix *col_matrix = zeros(mat->rows, 1);
@@ -288,7 +194,7 @@ Matrix *get_col(Matrix *mat, int col) {
 Matrix *get_lower(Matrix *mat) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
 
     // create a new matrix
     Matrix *lower_triangular = zeros(mat->rows, mat->cols);
@@ -306,7 +212,7 @@ Matrix *get_lower(Matrix *mat) {
 Matrix *get_upper(Matrix *mat) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
 
     // create a new matrix
     Matrix *upper_triangular = zeros(mat->rows, mat->cols);
@@ -324,9 +230,9 @@ Matrix *get_upper(Matrix *mat) {
 Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
-    if (row < 0 || col < 0) { log_error(__func__, "invalid indices"); return NULL; }
-    if (rows <= 0 || cols <= 0) { log_error(__func__, "invalid dimensions"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
+    if (row < 0 || col < 0) { lml_error(__func__, "invalid indices"); return NULL; }
+    if (rows <= 0 || cols <= 0) { lml_error(__func__, "invalid dimensions"); return NULL; }
 
     // create a new matrix for the submatrix
     Matrix *submatrix = zeros(rows, cols);
@@ -346,8 +252,8 @@ Matrix *get_submatrix(Matrix *mat, int row, int col, int rows, int cols) {
 double det(Matrix *mat) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return 0.0; }
-    if (mat->rows != mat->cols) { log_error(__func__, "matrix is not NxN"); return 0.0; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return 0.0; }
+    if (mat->rows != mat->cols) { lml_error(__func__, "matrix is not NxN"); return 0.0; }
 
     // perform LU decomposition
     Matrix *L, *U;
@@ -364,7 +270,7 @@ double det(Matrix *mat) {
 Matrix *transpose(Matrix *mat) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
 
     // create a new matrix with dimensions swapped
     Matrix *transposed = zeros(mat->cols, mat->rows);
@@ -382,8 +288,8 @@ Matrix *transpose(Matrix *mat) {
 Matrix *add(Matrix *mat1, Matrix *mat2) {
     
     // input validation
-    if (mat1 == NULL || mat2 == NULL) { log_error(__func__, "invalid input matrices"); return NULL; }
-    if (mat1->rows != mat2->rows || mat1->cols != mat2->cols) { log_error(__func__, "dimension mismatch"); return NULL; }
+    if (mat1 == NULL || mat2 == NULL) { lml_error(__func__, "invalid input matrices"); return NULL; }
+    if (mat1->rows != mat2->rows || mat1->cols != mat2->cols) { lml_error(__func__, "dimension mismatch"); return NULL; }
 
     // add matrices
     Matrix *result = zeros(mat1->rows, mat1->cols);
@@ -396,20 +302,56 @@ Matrix *add(Matrix *mat1, Matrix *mat2) {
     return result;
 }
 
-Matrix *multiply(Matrix *mat1, Matrix *mat2) {
+Matrix *multiply(Matrix *mat1, Matrix *multiplier) {
 
     // input validation
-    if (mat1 == NULL || mat2 == NULL) { log_error(__func__, "invalid input matrices"); return NULL; }
-    if (mat1->cols != mat2->rows) { log_error(__func__, "dimension mismatch"); return NULL; }
+    if (mat1 == NULL || multiplier == NULL) { lml_error(__func__, "invalid input matrices"); return NULL; }
+    if (mat1->cols != multiplier->rows) { lml_error(__func__, "dimension mismatch"); return NULL; }
 
     // multiply matrices together
-    Matrix *result = zeros(mat1->rows, mat2->cols);
+    Matrix *result = zeros(mat1->rows, multiplier->cols);
     for (int i = 0; i < mat1->rows; i++) {
-        for (int j = 0; j < mat2->cols; j++) {
+        for (int j = 0; j < multiplier->cols; j++) {
             for (int k = 0; k < mat1->cols; k++) {
-                result->data[i][j] += mat1->data[i][k] * mat2->data[k][j];
+                result->data[i][j] += mat1->data[i][k] * multiplier->data[k][j];
             }
         }
+    }
+
+    return result;
+}
+
+Matrix *scalar_multiply(Matrix *mat, double scalar) {
+    
+    // input validation
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
+
+    // create a new matrix to store the result
+    Matrix *result = copy(mat);
+
+    // scale matrix
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            result->data[i][j] *= scalar;
+        }   
+    }
+
+    return result;
+}
+
+Matrix *scalar_add(Matrix *mat, double scalar) {
+    
+    // input validation
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
+
+    // create a new matrix to store the result
+    Matrix *result = copy(mat);
+
+    // scale matrix
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            result->data[i][j] += scalar;
+        }   
     }
 
     return result;
@@ -418,9 +360,9 @@ Matrix *multiply(Matrix *mat1, Matrix *mat2) {
 void LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return; }    
-    if (L == NULL || U == NULL) { log_error(__func__, "invalid output matrices"); return; }    
-    if (mat->rows != mat->cols) { log_error(__func__, "matrix is not NxN"); return; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return; }    
+    if (L == NULL || U == NULL) { lml_error(__func__, "invalid output matrices"); return; }    
+    if (mat->rows != mat->cols) { lml_error(__func__, "matrix is not NxN"); return; }
 
     int n = mat->rows;
 
@@ -456,9 +398,9 @@ void LU_decompose(Matrix *mat, Matrix **L, Matrix **U) {
 Matrix *solve(Matrix *mat1, Matrix *mat2) {
     
     // input validation
-    if (mat1 == NULL || mat2 == NULL) { log_error(__func__, "invalid input matrices"); return NULL; }
-    if (mat1->rows != mat1->cols) { log_error(__func__, "matrix is not NxN"); return NULL; }
-    if (mat1->rows != mat2->rows) { log_error(__func__, "dimension mismatch"); return NULL; }
+    if (mat1 == NULL || mat2 == NULL) { lml_error(__func__, "invalid input matrices"); return NULL; }
+    if (mat1->rows != mat1->cols) { lml_error(__func__, "matrix is not NxN"); return NULL; }
+    if (mat1->rows != mat2->rows) { lml_error(__func__, "dimension mismatch"); return NULL; }
 
     // perform LU decomposition
     Matrix *L, *U;
@@ -492,8 +434,8 @@ Matrix *solve(Matrix *mat1, Matrix *mat2) {
 Matrix *inverse(Matrix *mat) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return NULL; }
-    if (mat->rows != mat->cols) { log_error(__func__, "matrix is not NxN"); return NULL; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return NULL; }
+    if (mat->rows != mat->cols) { lml_error(__func__, "matrix is not NxN"); return NULL; }
 
     Matrix *I = identity(mat->rows);
 
@@ -519,36 +461,11 @@ Matrix *inverse(Matrix *mat) {
 
 // --------------- In-Place Operations ---------------
 
-void scale(Matrix *mat, double scalar) {
-    
-    // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return; }
-
-    // scale matrix
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            mat->data[i][j] *= scalar;
-        }   
-    }
-}
-
-void shift(Matrix *mat, double scalar) {
-    
-    // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return; }
-
-    for (int i = 0; i < mat->rows; i++) {
-        for (int j = 0; j < mat->cols; j++) {
-            mat->data[i][j] += scalar;
-        }   
-    }
-}
-
 void map(Matrix *mat, double (*function)(double)) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return; }
-    if (function == NULL) { log_error(__func__, "invalid input function"); return; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return; }
+    if (function == NULL) { lml_error(__func__, "invalid input function"); return; }
 
     // apply the function element-wise to the matrix
     for (int i = 0; i < mat->rows; i++) {
@@ -561,9 +478,9 @@ void map(Matrix *mat, double (*function)(double)) {
 void set_row(Matrix *mat, int row_index, Matrix *row_values) {
     
     // input validation
-    if (mat == NULL || row_values == NULL) { log_error(__func__, "invalid input matrix or row values"); return; }
-    if (row_index < 0 || row_index >= mat->rows) { log_error(__func__, "invalid row index"); return; }
-    if (row_values->cols != mat->cols) { log_error(__func__, "dimension mismatch"); return; }
+    if (mat == NULL || row_values == NULL) { lml_error(__func__, "invalid input matrix or row values"); return; }
+    if (row_index < 0 || row_index >= mat->rows) { lml_error(__func__, "invalid row index"); return; }
+    if (row_values->cols != mat->cols) { lml_error(__func__, "dimension mismatch"); return; }
 
     // copy the values from row_values to the matrix
     for (int j = 0; j < mat->cols; j++) {
@@ -574,9 +491,9 @@ void set_row(Matrix *mat, int row_index, Matrix *row_values) {
 void set_col(Matrix *mat, int col_index, Matrix *col_values) {
     
     // input validation
-    if (mat == NULL || col_values == NULL) { log_error(__func__, "invalid input matrix or column values"); return; }
-    if (col_index < 0 || col_index >= mat->cols) { log_error(__func__, "invalid col index"); return; }
-    if (col_values->rows != mat->rows) { log_error(__func__, "dimension mismatch"); return; }
+    if (mat == NULL || col_values == NULL) { lml_error(__func__, "invalid input matrix or column values"); return; }
+    if (col_index < 0 || col_index >= mat->cols) { lml_error(__func__, "invalid col index"); return; }
+    if (col_values->rows != mat->rows) { lml_error(__func__, "dimension mismatch"); return; }
 
     // copy the values from col_values to the matrix
     for (int i = 0; i < mat->rows; i++) {
@@ -587,9 +504,9 @@ void set_col(Matrix *mat, int col_index, Matrix *col_values) {
 void set_submatrix(Matrix *mat, int row, int col, Matrix *sub) {
     
     // input validation
-    if (mat == NULL || sub == NULL) { log_error(__func__, "invalid input matrix or submatrix"); return; }
+    if (mat == NULL || sub == NULL) { lml_error(__func__, "invalid input matrix or submatrix"); return; }
     if (row < 0 || col < 0 || row + sub->rows > mat->rows || col + sub->cols > mat->cols) {
-        log_error(__func__, "invalid input submatrix dimensions"); return;
+        lml_error(__func__, "invalid input submatrix dimensions"); return;
     }
 
     // copy values from the submatrix to the matrix
@@ -603,8 +520,8 @@ void set_submatrix(Matrix *mat, int row, int col, Matrix *sub) {
 void remove_row(Matrix *mat, int row) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return; }
-    if (row < 0 || row >= mat->rows) { log_error(__func__, "invalid row index"); return; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return; }
+    if (row < 0 || row >= mat->rows) { lml_error(__func__, "invalid row index"); return; }
 
     // free memory for the row to be removed
     free(mat->data[row]);
@@ -622,8 +539,8 @@ void remove_row(Matrix *mat, int row) {
 void remove_col(Matrix *mat, int col) {
     
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return; }
-    if (col < 0 || col >= mat->cols) { log_error(__func__, "invalid column index"); return; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return; }
+    if (col < 0 || col >= mat->cols) { lml_error(__func__, "invalid column index"); return; }
 
     mat->cols--;
 
@@ -640,9 +557,9 @@ void remove_col(Matrix *mat, int col) {
 void insert_row(Matrix *mat, int row, Matrix *row_values) {
     
     // input validation
-    if (mat == NULL || row_values == NULL) { log_error(__func__, "invalid input matrix or row values"); return; }
-    if (row < 0 || row > mat->rows) { log_error(__func__, "invalid row index"); return; }
-    if (row_values->cols != mat->cols) { log_error(__func__, "dimension mismatch"); return; }
+    if (mat == NULL || row_values == NULL) { lml_error(__func__, "invalid input matrix or row values"); return; }
+    if (row < 0 || row > mat->rows) { lml_error(__func__, "invalid row index"); return; }
+    if (row_values->cols != mat->cols) { lml_error(__func__, "dimension mismatch"); return; }
 
     mat->rows++;
     mat->data = realloc(mat->data, mat->rows * sizeof(double *));
@@ -664,9 +581,9 @@ void insert_row(Matrix *mat, int row, Matrix *row_values) {
 void insert_col(Matrix *mat, int col, Matrix *col_values) {
     
     // input validation
-    if (mat == NULL || col_values == NULL) { log_error(__func__, "invalid input matrix or column values"); return; }
-    if (col < 0 || col > mat->cols) { log_error(__func__, "invalid input matrix or column values"); return; }
-    if (col_values->rows != mat->rows) { log_error(__func__, "dimension mismatch"); return; }
+    if (mat == NULL || col_values == NULL) { lml_error(__func__, "invalid input matrix or column values"); return; }
+    if (col < 0 || col > mat->cols) { lml_error(__func__, "invalid input matrix or column values"); return; }
+    if (col_values->rows != mat->rows) { lml_error(__func__, "dimension mismatch"); return; }
 
     mat->cols++;
     double **new_data = malloc(mat->rows * sizeof(double *));
@@ -698,8 +615,8 @@ void insert_col(Matrix *mat, int col, Matrix *col_values) {
 void append_rows(Matrix *mat1, Matrix *mat2) {
     
     // input validation
-    if (mat1 == NULL || mat2 == NULL) { log_error(__func__, "invalid input matrices"); return; }
-    if (mat1->cols != mat2->cols) { log_error(__func__, "dimension mismatch"); return; }
+    if (mat1 == NULL || mat2 == NULL) { lml_error(__func__, "invalid input matrices"); return; }
+    if (mat1->cols != mat2->cols) { lml_error(__func__, "dimension mismatch"); return; }
     
     // resize the matrix to accommodate additional rows
     mat1->data = realloc(mat1->data, (mat1->rows + mat2->rows) * sizeof(double *));
@@ -719,8 +636,8 @@ void append_rows(Matrix *mat1, Matrix *mat2) {
 void append_cols(Matrix *mat1, Matrix *mat2) {
     
     // input validation
-    if (mat1 == NULL || mat2 == NULL) { log_error(__func__, "invalid input matrices"); return; }
-    if (mat1->rows != mat2->rows) { log_error(__func__, "dimension mismatch"); return; }
+    if (mat1 == NULL || mat2 == NULL) { lml_error(__func__, "invalid input matrices"); return; }
+    if (mat1->rows != mat2->rows) { lml_error(__func__, "dimension mismatch"); return; }
     
     // resize the matrix to accommodate additional columns
     for (int i = 0; i < mat1->rows; i++) {
@@ -739,7 +656,7 @@ void append_cols(Matrix *mat1, Matrix *mat2) {
 void display(Matrix *mat) {
 
     // input validation
-    if (mat == NULL) { log_error(__func__, "invalid input matrix"); return; }
+    if (mat == NULL) { lml_error(__func__, "invalid input matrix"); return; }
     
     printf("Matrix (%d x %d):\n", mat->rows, mat->cols);
 
